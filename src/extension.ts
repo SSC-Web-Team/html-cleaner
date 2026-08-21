@@ -1,41 +1,31 @@
-import * as vscode from 'vscode';
-import { cleanHtml } from './cleaners/htmlCleaner';
+import * as vscode from "vscode";
+import { cleanHtml } from "./cleaners/htmlCleaner";
 
 export function activate(context: vscode.ExtensionContext) {
+  const disposable = vscode.commands.registerCommand("html-cleaner.cleanHtml", async () => {
+    const editor = vscode.window.activeTextEditor;
 
-	const disposable = vscode.commands.registerCommand(
-	'html-cleaner.cleanHtml',
-	async () => {
+    if (!editor) {
+      return;
+    }
 
-		const editor = vscode.window.activeTextEditor;
+    const document = editor.document;
+    const html = document.getText();
 
-		if (!editor) {
-			return;
-		}
+    const cleaned = cleanHtml(html);
 
-		const document = editor.document;
-		const html = document.getText();
+    const range = new vscode.Range(document.positionAt(0), document.positionAt(html.length));
 
-		const cleaned = cleanHtml(html);
+    const success = await editor.edit((editBuilder) => {
+      editBuilder.replace(range, cleaned);
+    });
 
-		const range = new vscode.Range(
-			document.positionAt(0),
-			document.positionAt(html.length)
-		);
+    if (success) {
+      vscode.window.showInformationMessage("HTML cleaned successfully.");
+    }
+  });
 
-		const success = await editor.edit(editBuilder => {
-			editBuilder.replace(range, cleaned);
-		});
-
-		if (success) {
-			vscode.window.showInformationMessage(
-				'HTML cleaned successfully.'
-			);
-		}
-	}
-);
-
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable);
 }
 
 export function deactivate() {}

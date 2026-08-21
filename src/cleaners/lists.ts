@@ -1,22 +1,19 @@
 export function cleanLists(document: Document): void {
-    removeEmptyListItems(document);
-    convertFakeBulletLists(document);
-    convertFakeNumberedLists(document);
-    mergeAdjacentLists(document);
+  removeEmptyListItems(document);
+  convertFakeBulletLists(document);
+  convertFakeNumberedLists(document);
+  mergeAdjacentLists(document);
 }
 
 /**
  * Remove empty <li> elements
  */
 function removeEmptyListItems(document: Document): void {
-    document.querySelectorAll('li').forEach(li => {
-        if (
-            !li.textContent?.trim() &&
-            li.children.length === 0
-        ) {
-            li.remove();
-        }
-    });
+  document.querySelectorAll("li").forEach((li) => {
+    if (!li.textContent?.trim() && li.children.length === 0) {
+      li.remove();
+    }
+  });
 }
 
 /**
@@ -33,49 +30,34 @@ function removeEmptyListItems(document: Document): void {
  * </ul>
  */
 function convertFakeBulletLists(document: Document): void {
+  const paragraphs = Array.from(document.querySelectorAll("p")) as HTMLParagraphElement[];
 
-    const paragraphs = Array.from(
-        document.querySelectorAll('p')
-    ) as HTMLParagraphElement[];
+  let currentList: HTMLUListElement | null = null;
 
-    let currentList: HTMLUListElement | null = null;
+  paragraphs.forEach((p) => {
+    const text = p.textContent?.trim() ?? "";
 
-    paragraphs.forEach(p => {
+    const isBullet = /^(•|▪|◦|-|o)\s+/.test(text);
 
-        const text = p.textContent?.trim() ?? '';
+    if (!isBullet) {
+      currentList = null;
+      return;
+    }
 
-        const isBullet =
-            /^(•|▪|◦|-|o)\s+/.test(text);
+    if (!currentList) {
+      currentList = document.createElement("ul");
 
-        if (!isBullet) {
-            currentList = null;
-            return;
-        }
+      p.parentNode?.insertBefore(currentList, p);
+    }
 
-        if (!currentList) {
+    const li = document.createElement("li");
 
-            currentList =
-                document.createElement('ul');
+    li.textContent = text.replace(/^(•|▪|◦|-|o)\s+/, "");
 
-            p.parentNode?.insertBefore(
-                currentList,
-                p
-            );
-        }
+    currentList.appendChild(li);
 
-        const li =
-            document.createElement('li');
-
-        li.textContent =
-            text.replace(
-                /^(•|▪|◦|-|o)\s+/,
-                ''
-            );
-
-        currentList.appendChild(li);
-
-        p.remove();
-    });
+    p.remove();
+  });
 }
 
 /**
@@ -91,52 +73,35 @@ function convertFakeBulletLists(document: Document): void {
  *   <li>Second</li>
  * </ol>
  */
-function convertFakeNumberedLists(
-    document: Document
-): void {
+function convertFakeNumberedLists(document: Document): void {
+  const paragraphs = Array.from(document.querySelectorAll("p")) as HTMLParagraphElement[];
 
-    const paragraphs = Array.from(
-        document.querySelectorAll('p')
-    ) as HTMLParagraphElement[];
+  let currentList: HTMLOListElement | null = null;
 
-    let currentList: HTMLOListElement | null = null;
+  paragraphs.forEach((p) => {
+    const text = p.textContent?.trim() ?? "";
 
-    paragraphs.forEach(p => {
+    const isNumbered = /^\d+[\.\)]\s+/.test(text);
 
-        const text = p.textContent?.trim() ?? '';
+    if (!isNumbered) {
+      currentList = null;
+      return;
+    }
 
-        const isNumbered =
-            /^\d+[\.\)]\s+/.test(text);
+    if (!currentList) {
+      currentList = document.createElement("ol");
 
-        if (!isNumbered) {
-            currentList = null;
-            return;
-        }
+      p.parentNode?.insertBefore(currentList, p);
+    }
 
-        if (!currentList) {
+    const li = document.createElement("li");
 
-            currentList =
-                document.createElement('ol');
+    li.textContent = text.replace(/^\d+[\.\)]\s+/, "");
 
-            p.parentNode?.insertBefore(
-                currentList,
-                p
-            );
-        }
+    currentList.appendChild(li);
 
-        const li =
-            document.createElement('li');
-
-        li.textContent =
-            text.replace(
-                /^\d+[\.\)]\s+/,
-                ''
-            );
-
-        currentList.appendChild(li);
-
-        p.remove();
-    });
+    p.remove();
+  });
 }
 
 /**
@@ -152,34 +117,20 @@ function convertFakeNumberedLists(
  *   <li>B</li>
  * </ul>
  */
-function mergeAdjacentLists(
-    document: Document
-): void {
+function mergeAdjacentLists(document: Document): void {
+  document.querySelectorAll("ul, ol").forEach((list) => {
+    let next = list.nextElementSibling;
 
-    document
-        .querySelectorAll('ul, ol')
-        .forEach(list => {
+    while (next && next.tagName === list.tagName) {
+      while (next.firstChild) {
+        list.appendChild(next.firstChild);
+      }
 
-            let next =
-                list.nextElementSibling;
+      const oldNext = next;
 
-            while (
-                next &&
-                next.tagName === list.tagName
-            ) {
+      next = next.nextElementSibling;
 
-                while (next.firstChild) {
-                    list.appendChild(
-                        next.firstChild
-                    );
-                }
-
-                const oldNext = next;
-
-                next =
-                    next.nextElementSibling;
-
-                oldNext.remove();
-            }
-        });
+      oldNext.remove();
+    }
+  });
 }

@@ -1,31 +1,25 @@
 {
   "name": "html-cleaner",
   "displayName": "html-cleaner",
-  "description": "Clean up HTML code",
   "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.125.0"
-  },
+  "description": "Clean up HTML code",
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "html-cleaner.cleanHtml",
-        "title": "HTML CLeaner: Clean HTML"
-      }
-    ]
-  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "test": "vscode-test"
+  },
+  "dependencies": {
+    "@types/jsdom": "^28.0.3",
+    "jsdom": "^30.0.1"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -34,6 +28,7 @@
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
     "eslint": "^10.5.0",
+    "oxfmt": "^0.64.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.61.1"
   },
@@ -41,8 +36,16 @@
     "diff": "^8.0.4",
     "serialize-javascript": "^7.0.6"
   },
-  "dependencies": {
-    "@types/jsdom": "^28.0.3",
-    "jsdom": "^30.0.1"
+  "contributes": {
+    "commands": [
+      {
+        "command": "html-cleaner.cleanHtml",
+        "title": "HTML CLeaner: Clean HTML"
+      }
+    ]
+  },
+  "activationEvents": [],
+  "engines": {
+    "vscode": "^1.125.0"
   }
 }
