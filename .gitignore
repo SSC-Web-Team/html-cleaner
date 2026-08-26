@@ -1,8 +1,17 @@
+# Node.js
 out
 dist
 node_modules
 package-lock.json
+
+# VS Code
 .vscode-test/
 *.vsix
+
+# OS
 *:Zone.Identifier
 .DS_Store
+
+# Vitest
+vitest.config.js
+vitest.config.js.map
