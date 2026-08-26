@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const document = editor.document;
+    const { document } = editor;
     const html = document.getText();
     const cleaned = cleanHtml(html);
     const range = new vscode.Range(document.positionAt(0), document.positionAt(html.length));
