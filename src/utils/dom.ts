@@ -1,3 +1,5 @@
+import { SHOW_COMMENT, SHOW_TEXT } from "./constants.ts";
+
 export function removeBySelector(document: Document, selector: string) {
   document.querySelectorAll(selector).forEach((el) => {
     el.remove();
@@ -36,7 +38,7 @@ export function addClassBySelector(document: Document, selector: string, classNa
 
 export function removeComments(document: Document) {
   const comments: Comment[] = [];
-  const commentWalker = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT);
+  const commentWalker = document.createTreeWalker(document, SHOW_COMMENT);
   let node: Node | null;
 
   while ((node = commentWalker.nextNode())) {
@@ -48,7 +50,7 @@ export function removeComments(document: Document) {
 
 export function normalizeText(document: Document) {
   const textNodes: Text[] = [];
-  const textWalker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT);
+  const textWalker = document.createTreeWalker(document, SHOW_TEXT);
   let node: Node | null;
 
   while ((node = textWalker.nextNode())) {

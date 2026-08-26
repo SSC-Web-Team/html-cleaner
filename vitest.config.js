@@ -1,8 +1,7 @@
-import path from 'path';
 import { defineConfig } from 'vitest/config';
-
 export default defineConfig({
-  test: {
-    dir: 'src',
-  },
+    test: {
+        dir: 'src',
+    },
 });
+//# sourceMappingURL=vitest.config.js.map
