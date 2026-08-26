@@ -3,6 +3,7 @@
   "displayName": "html-cleaner",
   "version": "0.0.1",
   "description": "Clean up HTML code",
+  "type": "module",
   "categories": [
     "Other"
   ],
@@ -15,7 +16,8 @@
     "lint": "eslint src",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
-    "test": "vscode-test"
+    "test:vitest": "vitest",
+    "test:vscode": "vscode-test"
   },
   "dependencies": {
     "@types/jsdom": "^28.0.3",
@@ -30,7 +32,8 @@
     "eslint": "^10.5.0",
     "oxfmt": "^0.64.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.1"
+    "typescript-eslint": "^8.61.1",
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "diff": "^8.0.4",
@@ -40,7 +43,7 @@
     "commands": [
       {
         "command": "html-cleaner.cleanHtml",
-        "title": "HTML CLeaner: Clean HTML"
+        "title": "HTML Cleaner: Clean HTML"
       }
     ]
   },

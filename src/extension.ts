@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { cleanHtml } from "./cleaners/htmlCleaner";
+import { cleanHtml } from "./index.ts";
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand("html-cleaner.cleanHtml", async () => {
