@@ -1,4 +1,4 @@
-import { removeAttribute } from "../utils/dom.ts";
+import { removeAttribute } from '../utils/dom.ts';
 
 const attributesToRemove = [
   'border',

@@ -1,8 +1,8 @@
-import * as vscode from "vscode";
-import { cleanHtml } from "./index.ts";
+import * as vscode from 'vscode';
+import { cleanHtml } from './index.ts';
 
 export function activate(context: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand("html-cleaner.cleanHtml", async () => {
+  const disposable = vscode.commands.registerCommand('html-cleaner.cleanHtml', async () => {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
@@ -20,12 +20,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     if (success) {
       try {
-        await vscode.commands.executeCommand("editor.action.formatDocument");
-      } catch (error) {
-        vscode.window.showErrorMessage("Unable to format the cleaned HTML.");
+        await vscode.commands.executeCommand('editor.action.formatDocument');
+      } catch {
+        vscode.window.showErrorMessage('Unable to format the cleaned HTML.');
       }
 
-      vscode.window.showInformationMessage("HTML cleaned successfully.");
+      vscode.window.showInformationMessage('HTML cleaned successfully.');
     }
   });
 

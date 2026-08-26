@@ -1,8 +1,8 @@
-import { JSDOM } from "jsdom";
+import { JSDOM } from 'jsdom';
 
-import { cleanElements } from "./cleaners/elements.ts";
-import { cleanAttributes } from "./cleaners/attributes.ts";
-import { cleanFormatting } from "./cleaners/formatting.ts";
+import { cleanElements } from './cleaners/elements.ts';
+import { cleanAttributes } from './cleaners/attributes.ts';
+import { cleanFormatting } from './cleaners/formatting.ts';
 
 export function cleanHtml(html: string): string {
   // Simple text-based cleanup

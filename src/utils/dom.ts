@@ -1,4 +1,4 @@
-import { SHOW_COMMENT, SHOW_TEXT } from "./constants.ts";
+import { SHOW_COMMENT, SHOW_TEXT } from './constants.ts';
 
 export function removeBySelector(document: Document, selector: string) {
   document.querySelectorAll(selector).forEach((el) => {
@@ -60,8 +60,8 @@ export function normalizeText(document: Document) {
   textNodes.forEach((textNode) => {
     textNode.textContent =
       textNode.textContent
-        ?.replace(/\u00A0/g, " ")
-        .replace(/\s+/g, " ")
-        .trim() ?? "";
+        ?.replace(/\u00A0/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim() ?? '';
   });
 }

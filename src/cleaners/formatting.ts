@@ -1,4 +1,4 @@
-import { addClassBySelector } from "../utils/dom.ts";
+import { addClassBySelector } from '../utils/dom.ts';
 
 export function cleanFormatting(document: Document): void {
   addClassBySelector(document, 'table', 'table');
@@ -23,12 +23,12 @@ export function cleanFormatting(document: Document): void {
  * </ul>
  */
 function convertFakeBulletLists(document: Document): void {
-  const paragraphs = Array.from(document.querySelectorAll("p")) as HTMLParagraphElement[];
+  const paragraphs = Array.from(document.querySelectorAll('p')) as HTMLParagraphElement[];
 
   let currentList: HTMLUListElement | null = null;
 
   paragraphs.forEach((p) => {
-    const text = p.textContent?.trim() ?? "";
+    const text = p.textContent?.trim() ?? '';
 
     const isBullet = /^(•|▪|◦|-|o)\s+/.test(text);
 
@@ -38,14 +38,14 @@ function convertFakeBulletLists(document: Document): void {
     }
 
     if (!currentList) {
-      currentList = document.createElement("ul");
+      currentList = document.createElement('ul');
 
       p.parentNode?.insertBefore(currentList, p);
     }
 
-    const li = document.createElement("li");
+    const li = document.createElement('li');
 
-    li.textContent = text.replace(/^(•|▪|◦|-|o)\s+/, "");
+    li.textContent = text.replace(/^(•|▪|◦|-|o)\s+/, '');
 
     currentList.appendChild(li);
 
@@ -67,14 +67,14 @@ function convertFakeBulletLists(document: Document): void {
  * </ol>
  */
 function convertFakeNumberedLists(document: Document): void {
-  const paragraphs = Array.from(document.querySelectorAll("p")) as HTMLParagraphElement[];
+  const paragraphs = Array.from(document.querySelectorAll('p')) as HTMLParagraphElement[];
 
   let currentList: HTMLOListElement | null = null;
 
   paragraphs.forEach((p) => {
-    const text = p.textContent?.trim() ?? "";
+    const text = p.textContent?.trim() ?? '';
 
-    const isNumbered = /^\d+[\.\)]\s+/.test(text);
+    const isNumbered = /^\d+[.)]\s+/.test(text);
 
     if (!isNumbered) {
       currentList = null;
@@ -82,14 +82,14 @@ function convertFakeNumberedLists(document: Document): void {
     }
 
     if (!currentList) {
-      currentList = document.createElement("ol");
+      currentList = document.createElement('ol');
 
       p.parentNode?.insertBefore(currentList, p);
     }
 
-    const li = document.createElement("li");
+    const li = document.createElement('li');
 
-    li.textContent = text.replace(/^\d+[\.\)]\s+/, "");
+    li.textContent = text.replace(/^\d+[.)]\s+/, '');
 
     currentList.appendChild(li);
 
@@ -111,7 +111,7 @@ function convertFakeNumberedLists(document: Document): void {
  * </ul>
  */
 function mergeAdjacentLists(document: Document): void {
-  document.querySelectorAll("ul, ol").forEach((list) => {
+  document.querySelectorAll('ul, ol').forEach((list) => {
     let next = list.nextElementSibling;
 
     while (next && next.tagName === list.tagName) {
