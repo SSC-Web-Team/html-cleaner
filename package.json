@@ -3,36 +3,37 @@
   "displayName": "html-cleaner",
   "version": "0.0.1",
   "description": "Clean up HTML code",
-  "type": "module",
   "categories": [
     "Other"
   ],
+  "type": "module",
   "main": "./out/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "test:vitest": "vitest",
     "test:vscode": "vscode-test"
   },
   "dependencies": {
-    "@types/jsdom": "^28.0.3",
     "jsdom": "^30.0.1"
   },
   "devDependencies": {
+    "@types/jsdom": "^28.0.3",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "@types/vscode": "^1.125.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
-    "eslint": "^10.5.0",
     "oxfmt": "^0.64.0",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.1",
+    "oxlint": "^1.80.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.11"
   },
   "overrides": {
