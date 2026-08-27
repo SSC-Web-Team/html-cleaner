@@ -9,8 +9,18 @@ test('remove del tag', () => {
   const dom = new JSDOM(initialHtml);
   const { document } = dom.window;
 
-  cleanElements(dom.window.document);
+  cleanElements(document);
 
   expect(document.body.innerHTML).toBe(finalHtml);
 });
 
+test('unwrap span tag', () => {
+  const initialHtml = '<div>This is a <span>special</span> test</div>';
+  const finalHtml = '<div>This is a special test</div>';
+  const dom = new JSDOM(initialHtml);
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe(finalHtml);
+});

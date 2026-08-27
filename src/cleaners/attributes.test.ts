@@ -9,7 +9,7 @@ test('remove class attribute', () => {
   const dom = new JSDOM(initialHtml);
   const { document } = dom.window;
 
-  cleanAttributes(dom.window.document);
+  cleanAttributes(document);
 
   expect(document.body.innerHTML).toBe(finalHtml);
 });
