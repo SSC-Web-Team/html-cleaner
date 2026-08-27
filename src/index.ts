@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 
-import { cleanElements } from './cleaners/elements.ts';
 import { cleanAttributes } from './cleaners/attributes.ts';
+import { cleanElements } from './cleaners/elements.ts';
 import { cleanFormatting } from './cleaners/formatting.ts';
 
 export function cleanHtml(html: string): string {
@@ -13,8 +13,8 @@ export function cleanHtml(html: string): string {
   const { document } = dom.window;
 
   // Run cleanup modules
-  cleanElements(document);
   cleanAttributes(document);
+  cleanElements(document);
   cleanFormatting(document);
 
   const result = document.body?.innerHTML ?? '';

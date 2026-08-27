@@ -1,8 +1,8 @@
 import {
+  normalizeText,
   removeBySelector,
   removeEmptyBySelector,
   removeComments,
-  normalizeText,
   unwrapBySelector,
 } from '../utils/dom.ts';
 
