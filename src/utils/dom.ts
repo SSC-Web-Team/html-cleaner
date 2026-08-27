@@ -1,4 +1,4 @@
-import { SHOW_COMMENT, SHOW_TEXT } from './constants.ts';
+import { SHOW_COMMENT } from './constants.ts';
 
 export function removeBySelector(document: Document, selector: string) {
   document.querySelectorAll(selector).forEach((el) => {
@@ -49,19 +49,10 @@ export function removeComments(document: Document) {
 }
 
 export function normalizeText(document: Document) {
-  const textNodes: Text[] = [];
-  const textWalker = document.createTreeWalker(document, SHOW_TEXT);
-  let node: Node | null;
-
-  while ((node = textWalker.nextNode())) {
-    textNodes.push(node as Text);
-  }
-
-  textNodes.forEach((textNode) => {
-    textNode.textContent =
-      textNode.textContent
-        ?.replace(/\u00A0/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim() ?? '';
-  });
+  document.body.innerHTML = document.body.innerHTML
+    .replaceAll('&nbsp;', ' ')
+    .replaceAll(/\s+/g, ' ')
+    // Remove space after opening tag and before closing tag
+    .replaceAll(/(<[^>]+>)\s+|\s+(<\/[^>]+>)/g, '$1$2')
+    .trim();
 }
