@@ -1,204 +1,169 @@
-import { JSDOM } from "jsdom";
+import { SHOW_TEXT } from '../utils/constants.ts';
 
-const MONTHS_EN: Record<string, number> = {
-  january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
-  july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+const MONTHS_EN = [
+  'january',
+  'february',
+  'march',
+  'april',
+  'may',
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
+];
+const MONTHS_FR = [
+  'janvier',
+  'février',
+  'mars',
+  'avril',
+  'mai',
+  'juin',
+  'juillet',
+  'août',
+  'septembre',
+  'octobre',
+  'novembre',
+  'décembre',
+];
+
+const NBSP = '\u00A0';
+const pad = (n: number | string) => String(n).padStart(2, '0');
+const stripAccents = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '');
+
+// Unaccented spellings (fevrier, aout, decembre) are accepted too
+const monthNumber = (month: string, months: string[]) =>
+  months.map(stripAccents).indexOf(stripAccents(month.toLowerCase())) + 1;
+
+const monthNames = (months: string[]) => [...months, ...months.map(stripAccents)].join('|');
+
+const PERIOD = '[ap]\\.?m\\.?';
+const HOUR_12 = '(?:1[0-2]|0?[1-9])';
+
+const to24Hours = (hour: string, period = '') => {
+  let hours = Number(hour);
+
+  if (/^p/i.test(period) && hours < 12) {
+    hours += 12;
+  } else if (/^a/i.test(period) && hours === 12) {
+    hours = 0;
+  }
+
+  return hours;
 };
 
-const MONTHS_FR: Record<string, number> = {
-  janvier: 1, février: 2, fevrier: 2, mars: 3, avril: 4, mai: 5, juin: 6,
-  juillet: 7, août: 8, aout: 8, septembre: 9, octobre: 10, novembre: 11, décembre: 12, decembre: 12,
+type Rule = {
+  regex: RegExp;
+  format: (match: RegExpMatchArray) => { dateTime: string; text: string };
 };
 
-function pad(n: number): string {
-  return n.toString().padStart(2, "0");
-}
-
-function createTimeElement(document: Document, dateTime: string, displayText: string): HTMLTimeElement {
-  const time = document.createElement("time");
-
-  time.className = "nowrap";
-  time.setAttribute("datetime", dateTime);
-  time.textContent = displayText;
-
-  return time;
-}
+const rules: Rule[] = [
+  // English date: "September 30, 2026"
+  {
+    regex: new RegExp(`\\b(${monthNames(MONTHS_EN)})\\s+(\\d{1,2})(,?)\\s+(\\d{4})\\b`, 'gi'),
+    format: ([, month, day, comma, year]) => ({
+      dateTime: `${year}-${pad(monthNumber(month, MONTHS_EN))}-${pad(day)}`,
+      text: `${month}${NBSP}${day}${comma} ${year}`,
+    }),
+  },
+  // French date: "30 septembre 2026" / "1er septembre 2026"
+  {
+    regex: new RegExp(`\\b(\\d{1,2})(er)?\\s+(${monthNames(MONTHS_FR)})\\s+(\\d{4})\\b`, 'gi'),
+    format: ([, day, er = '', month, year]) => ({
+      dateTime: `${year}-${pad(monthNumber(month, MONTHS_FR))}-${pad(day)}`,
+      text: `${day}${er}${NBSP}${month} ${year}`,
+    }),
+  },
+  // English date without a year: "October 26"
+  {
+    regex: new RegExp(`\\b(${monthNames(MONTHS_EN)})\\s+(\\d{1,2})\\b`, 'gi'),
+    format: ([, month, day]) => ({
+      dateTime: `${pad(monthNumber(month, MONTHS_EN))}-${pad(day)}`,
+      text: `${month}${NBSP}${day}`,
+    }),
+  },
+  // First hour of an English time range, which shares the period of the end time: "1" in "1 to 2 pm"
+  {
+    regex: new RegExp(
+      `\\b(${HOUR_12})(?=\\s+(?:to|and|-|–)\\s+${HOUR_12}(?::\\d{2})?\\s?(${PERIOD})(?!\\w))`,
+      'gi',
+    ),
+    format: ([, hour, period]) => ({
+      dateTime: `${pad(to24Hours(hour, period))}:00`,
+      text: `${hour} ${period}`,
+    }),
+  },
+  // English time: "3:30 p.m."
+  {
+    regex: new RegExp(`\\b(\\d{1,2}):(\\d{2})(?:\\s?(${PERIOD}))?(?!\\w)`, 'gi'),
+    format: ([text, hour, minutes, period]) => ({
+      dateTime: `${pad(to24Hours(hour, period))}:${minutes}`,
+      text,
+    }),
+  },
+  // English time without minutes: "2 pm"
+  {
+    regex: new RegExp(`(?<![\\d:])\\b(${HOUR_12})\\s?(${PERIOD})(?!\\w)`, 'gi'),
+    format: ([text, hour, period]) => ({
+      dateTime: `${pad(to24Hours(hour, period))}:00`,
+      text,
+    }),
+  },
+  // French time: "15 h 30" / "15h30" / "15 h"
+  {
+    regex: /\b(\d{1,2})\s*h(?:\s*(\d{2}))?\b/gi,
+    format: ([, hour, minutes]) => ({
+      dateTime: `${pad(hour)}:${minutes ?? '00'}`,
+      text: minutes ? `${hour}${NBSP}h${NBSP}${minutes}` : `${hour}${NBSP}h`,
+    }),
+  },
+];
 
 function getTextNodes(document: Document): Text[] {
+  const walker = document.createTreeWalker(document.body, SHOW_TEXT);
   const textNodes: Text[] = [];
-  const stack: Node[] = [document.body];
+  let node: Node | null;
 
-  while (stack.length > 0) {
-    const node = stack.pop();
-
-    if (!node) {
-      continue;
-    }
-
-    Array.from(node.childNodes).forEach((child) => {
-      if (child.nodeType === 3) {
-        textNodes.push(child as Text);
-      } else {
-        stack.push(child);
-      }
-    });
+  while ((node = walker.nextNode())) {
+    textNodes.push(node as Text);
   }
 
   return textNodes;
 }
 
-function replaceMatchesInTextNode(
-  document: Document,
-  textNode: Text,
-  patterns: Array<{
-    regex: RegExp;
-    formatter: (match: RegExpMatchArray) => { dateTime: string; displayText: string } | null;
-  }>
-): void {
-  const text = textNode.textContent ?? "";
-  const matches: Array<{ start: number; end: number; node: Node }> = [];
-
-  patterns.forEach(({ regex, formatter }) => {
-    const searchRegex = new RegExp(regex.source, regex.flags.includes("g") ? regex.flags : `${regex.flags}g`);
-
-    for (const match of text.matchAll(searchRegex)) {
-      const replacement = formatter(match);
-
-      if (!replacement) {
-        continue;
+export function addDateTimeTags(document: Document): void {
+  rules.forEach(({ regex, format }) => {
+    getTextNodes(document).forEach((textNode) => {
+      // Skip text that is already tagged
+      if (textNode.parentElement?.closest('time')) {
+        return;
       }
 
-      const start = match.index ?? 0;
-      const end = start + match[0].length;
+      const matches = [...textNode.data.matchAll(regex)];
 
-      matches.push({
-        start,
-        end,
-        node: createTimeElement(document, replacement.dateTime, replacement.displayText),
+      if (matches.length === 0) {
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+
+      matches.forEach((match) => {
+        const { dateTime, text } = format(match);
+        const time = document.createElement('time');
+
+        time.className = 'nowrap';
+        time.setAttribute('datetime', dateTime);
+        time.textContent = text;
+
+        fragment.append(textNode.data.slice(lastIndex, match.index), time);
+        lastIndex = match.index + match[0].length;
       });
-    }
+
+      fragment.append(textNode.data.slice(lastIndex));
+      textNode.replaceWith(fragment);
+    });
   });
-
-  if (matches.length === 0) {
-    return;
-  }
-
-  matches.sort((a, b) => a.start - b.start || b.end - a.end);
-
-  const fragment = document.createDocumentFragment();
-  let lastIndex = 0;
-
-  matches.forEach((match) => {
-    if (match.start < lastIndex) {
-      return;
-    }
-
-    if (match.start > lastIndex) {
-      fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.start)));
-    }
-
-    fragment.appendChild(match.node);
-    lastIndex = match.end;
-  });
-
-  if (lastIndex < text.length) {
-    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
-  }
-
-  textNode.replaceWith(fragment);
-}
-
-function addDateTimeTagsToDocument(document: Document): void {
-  const textNodes = getTextNodes(document);
-  const enMonthNames = Object.keys(MONTHS_EN).join("|");
-  const frMonthNames = Object.keys(MONTHS_FR).join("|");
-
-  const patterns = [
-    {
-      regex: new RegExp(`\\b(${enMonthNames})\\s+(\\d{1,2}),?\\s+(\\d{4})\\b`, "gi"),
-      formatter: (match: RegExpMatchArray) => {
-        const [, month, day, year] = match;
-        const monthNum = MONTHS_EN[month.toLowerCase()];
-        const dayNum = parseInt(day, 10);
-        const yearNum = parseInt(year, 10);
-
-        return {
-          dateTime: `${yearNum}-${pad(monthNum)}-${pad(dayNum)}`,
-          displayText: match[0],
-        };
-      },
-    },
-    {
-      regex: new RegExp(`\\b(\\d{1,2})(?:er)?\\s+(${frMonthNames})\\s+(\\d{4})\\b`, "gi"),
-      formatter: (match: RegExpMatchArray) => {
-        const [, day, month, year] = match;
-        const monthNum = MONTHS_FR[month.toLowerCase()];
-        const dayNum = parseInt(day, 10);
-        const yearNum = parseInt(year, 10);
-
-        return {
-          dateTime: `${yearNum}-${pad(monthNum)}-${pad(dayNum)}`,
-          displayText: match[0],
-        };
-      },
-    },
-    {
-      regex: /\b(\d{1,2}):(\d{2})\s?(a\.m\.|p\.m\.|am|pm)?\b/gi,
-      formatter: (match: RegExpMatchArray) => {
-        const [, hourStr, minStr, ampm] = match;
-
-        let hour = parseInt(hourStr, 10);
-        const min = parseInt(minStr, 10);
-
-        if (ampm) {
-          const lower = ampm.toLowerCase();
-
-          if (lower.startsWith("p") && hour < 12) {
-            hour += 12;
-          }
-
-          if (lower.startsWith("a") && hour === 12) {
-            hour = 0;
-          }
-        }
-
-        return {
-          dateTime: `${pad(hour)}:${pad(min)}`,
-          displayText: match[0],
-        };
-      },
-    },
-    {
-      regex: /\b(\d{1,2})\s*h(?:\s*(\d{2}))?\b/gi,
-      formatter: (match: RegExpMatchArray) => {
-        const [, hourStr, minStr] = match;
-        const hour = parseInt(hourStr, 10);
-        const min = minStr ? parseInt(minStr, 10) : 0;
-
-        return {
-          dateTime: `${pad(hour)}:${pad(min)}`,
-          displayText: minStr ? `${hour}\u00A0h\u00A0${pad(min)}` : `${hour}\u00A0h`,
-        };
-      },
-    },
-  ];
-
-  textNodes.forEach((textNode) => {
-    replaceMatchesInTextNode(document, textNode, patterns);
-  });
-}
-
-// Wraps dates (and optionally times)
-export function addDateTimeTags(document: Document): void;
-export function addDateTimeTags(html: string): string;
-export function addDateTimeTags(input: string | Document): string | void {
-  if (typeof input === "string") {
-    const dom = new JSDOM(input);
-
-    addDateTimeTagsToDocument(dom.window.document);
-
-    return dom.window.document.body.innerHTML;
-  }
-
-  addDateTimeTagsToDocument(input);
 }
