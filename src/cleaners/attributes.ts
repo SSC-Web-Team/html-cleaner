@@ -16,4 +16,8 @@ export function cleanAttributes(document: Document): void {
   attributesToRemove.forEach((attr) => {
     removeAttribute(document, attr);
   });
+
+  document.querySelectorAll('li[type]').forEach((li) => {
+    li.removeAttribute('type');
+  });
 }

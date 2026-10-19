@@ -23,3 +23,12 @@ test('keep id attribute', () => {
 
   expect(document.body.innerHTML).toBe(html);
 });
+
+test('remove type attribute from list items only', () => {
+  const dom = new JSDOM('<li type="a">Item</li><input type="text">');
+  const { document } = dom.window;
+
+  cleanAttributes(document);
+
+  expect(document.body.innerHTML).toBe('<li>Item</li><input type="text">');
+});
