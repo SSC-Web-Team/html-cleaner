@@ -1,6 +1,5 @@
 import { expect, test } from 'vitest';
 import { JSDOM } from 'jsdom';
-
 import { normalizeText } from './dom.ts';
 
 test('normalize text', () => {

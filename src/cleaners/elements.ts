@@ -52,6 +52,9 @@ export function cleanElements(document: Document): void {
     unwrapBySelector(document, selector);
   });
 
+  // Remove underline tags that redundantly wrap links or their contents
+  unwrapBySelector(document, 'a u, u:has(a)');
+
   // Remove Word TOC bookmarks
   document.querySelectorAll('a[name]').forEach((a) => {
     const name = a.getAttribute('name');
