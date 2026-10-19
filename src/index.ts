@@ -3,6 +3,7 @@ import { JSDOM } from 'jsdom';
 import { cleanAttributes } from './cleaners/attributes.ts';
 import { cleanElements } from './cleaners/elements.ts';
 import { cleanFormatting } from './cleaners/formatting.ts';
+import { addDateTimeTags } from './cleaners/date-time.ts';
 
 export function cleanHtml(html: string): string {
   // Simple text-based cleanup
@@ -16,6 +17,7 @@ export function cleanHtml(html: string): string {
   cleanAttributes(document);
   cleanElements(document);
   cleanFormatting(document);
+  addDateTimeTags(document);
 
   const result = document.body?.innerHTML ?? '';
 
