@@ -7,6 +7,23 @@ export function cleanFormatting(document: Document): void {
   convertFakeBulletLists(document);
   convertFakeNumberedLists(document);
   mergeAdjacentLists(document);
+  moveTrailingBreaksOutsideBoldElements(document);
+}
+
+function moveTrailingBreaksOutsideBoldElements(document: Document): void {
+  document.querySelectorAll('b, strong').forEach((element) => {
+    const trailingBreaks: Node[] = [];
+
+    while (element.lastChild?.nodeName === 'BR') {
+      const lineBreak = element.lastChild;
+      trailingBreaks.unshift(lineBreak);
+      element.removeChild(lineBreak);
+    }
+
+    trailingBreaks.forEach((lineBreak) => {
+      element.parentNode?.insertBefore(lineBreak, element.nextSibling);
+    });
+  });
 }
 
 /**
