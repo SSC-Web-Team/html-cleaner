@@ -71,3 +71,34 @@ test('keep paragraphs when a list item or table cell contains more than one', ()
     '<ul><li><p>First</p><p>Second</p></li></ul><table><tbody><tr><td><p>First</p><p>Second</p></td><th>Only paragraph</th></tr></tbody></table>',
   );
 });
+
+test('unwrap strong tags from table headers and heading elements', () => {
+  const dom = new JSDOM(
+    '<table><thead><tr><th><strong>Column</strong></th></tr></thead></table><h1><strong>Title</strong></h1><h2>Sub <strong>heading</strong></h2><h3><strong>Third</strong></h3><h4><strong>Fourth</strong></h4><h5><strong>Fifth</strong></h5><h6><strong>Sixth</strong></h6>',
+  );
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe(
+    '<table><thead><tr><th>Column</th></tr></thead></table><h1>Title</h1><h2>Sub heading</h2><h3>Third</h3><h4>Fourth</h4><h5>Fifth</h5><h6>Sixth</h6>',
+  );
+});
+
+test('unwrap nested duplicate strong tags', () => {
+  const dom = new JSDOM('<p><strong><strong>test</strong></strong></p>');
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe('<p><strong>test</strong></p>');
+});
+
+test.each(['strong', 'b', 'i', 'em'])('merge adjacent <%s> tags', (tag) => {
+  const dom = new JSDOM(`<p><${tag}>this is </${tag}><${tag}>bold</${tag}></p>`);
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe(`<p><${tag}>this is bold</${tag}></p>`);
+});

@@ -52,6 +52,10 @@ export function cleanElements(document: Document): void {
     unwrapBySelector(document, selector);
   });
 
+  unwrapBySelector(document, 'th strong, h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong, th b, h1 b, h2 b, h3 b, h4 b, h5 b, h6 b');
+  unwrapDuplicateStrongTags(document);
+  mergeAdjacentBoldTags(document);
+
   unwrapSingleParagraphsInContainers(document);
 
   // Remove underline tags that redundantly wrap links or their contents
@@ -91,5 +95,31 @@ function unwrapSingleParagraphsInContainers(document: Document): void {
     }
 
     paragraph.remove();
+  });
+}
+
+function unwrapDuplicateStrongTags(document: Document): void {
+  document.querySelectorAll('strong strong').forEach((strong) => {
+    while (strong.firstChild) {
+      strong.parentNode?.insertBefore(strong.firstChild, strong);
+    }
+
+    strong.remove();
+  });
+}
+
+function mergeAdjacentBoldTags(document: Document): void {
+  document.querySelectorAll('strong, b, em, i').forEach((element) => {
+    let next = element.nextSibling;
+
+    while (next?.nodeName === element.nodeName) {
+      while (next.firstChild) {
+        element.appendChild(next.firstChild);
+      }
+
+      const merged = next;
+      next = next.nextSibling;
+      merged.remove();
+    }
   });
 }
