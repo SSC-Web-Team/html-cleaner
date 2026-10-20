@@ -31,12 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     if (success) {
-      try {
-        await vscode.commands.executeCommand('editor.action.formatDocument');
-      } catch {
-        vscode.window.showErrorMessage('Unable to format the cleaned HTML.');
-      }
-
       vscode.window.showInformationMessage('HTML cleaned successfully.');
     }
   });

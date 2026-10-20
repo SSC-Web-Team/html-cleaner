@@ -34,3 +34,9 @@ test('apply French typography only when French is selected', () => {
   expect(cleanHtml(html, 'fr')).toBe('<p>Bonjour&nbsp;: 1&nbsp;025&nbsp;$</p>');
   expect(cleanHtml(html, 'en')).toBe('<p>Bonjour : 1 025 $</p>');
 });
+
+test('beautify cleaned HTML with indentation', () => {
+  expect(cleanHtml('<section><p>First</p><p>Second</p></section>')).toBe(
+    '<section>\n  <p>First</p>\n  <p>Second</p>\n</section>',
+  );
+});

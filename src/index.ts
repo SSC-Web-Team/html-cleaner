@@ -1,3 +1,4 @@
+import beautify from 'js-beautify';
 import { JSDOM } from 'jsdom';
 
 import { cleanAttributes } from './cleaners/attributes.ts';
@@ -30,5 +31,10 @@ export function cleanHtml(html: string, language: ContentLanguage = 'en'): strin
 
   const result = document.body?.innerHTML ?? '';
 
-  return result;
+  return beautify.html(result, {
+    indent_size: 2,
+    max_preserve_newlines: 1,
+    preserve_newlines: true,
+    wrap_line_length: 0,
+  });
 }
