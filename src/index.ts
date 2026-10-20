@@ -31,11 +31,77 @@ export function cleanHtml(html: string, language: ContentLanguage = 'en'): strin
 
   const result = document.body?.innerHTML ?? '';
 
-  return beautify.html(result, {
+  const formatted = beautify.html(result, {
     indent_size: 2,
     max_preserve_newlines: 1,
     preserve_newlines: true,
-    extra_liners: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'div', 'table'],
     wrap_line_length: 0,
   });
+
+  return addBlockSpacing(formatted);
+}
+
+const tagsWithSpacing = new Set([
+  'p',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'ul',
+  'ol',
+  'div',
+  'table',
+]);
+const voidTags = new Set([
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+]);
+
+function addBlockSpacing(html: string): string {
+  const openTags: string[] = [];
+  const lines = html.split('\n');
+  const formattedLines: string[] = [];
+
+  lines.forEach((line) => {
+    const firstTag = line.match(/^\s*<([a-z][\w:-]*)\b[^>]*>/i);
+    const firstTagName = firstTag?.[1].toLowerCase();
+
+    if (firstTagName && tagsWithSpacing.has(firstTagName) && !openTags.includes('ul')) {
+      if (formattedLines.length > 0 && formattedLines[formattedLines.length - 1] !== '') {
+        formattedLines.push('');
+      }
+    }
+
+    for (const [, closing, tagName] of line.matchAll(/<(\/)?([a-z][\w:-]*)\b[^>]*>/gi)) {
+      const name = tagName.toLowerCase();
+
+      if (closing) {
+        const index = openTags.lastIndexOf(name);
+
+        if (index !== -1) {
+          openTags.length = index;
+        }
+      } else if (!voidTags.has(name)) {
+        openTags.push(name);
+      }
+    }
+
+    formattedLines.push(line);
+  });
+
+  return formattedLines.join('\n');
 }

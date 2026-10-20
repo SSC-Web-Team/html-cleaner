@@ -50,3 +50,13 @@ test('add blank lines before headings, lists, divs, and tables', () => {
     '<p>Paragraph</p>\n\n<h2>Heading</h2>\n\n<ul>\n  <li>Item</li>\n</ul>\n\n<ol>\n  <li>Numbered</li>\n</ol>\n\n<div>Division</div>\n\n<table class="table table-condensed table-bordered">\n  <tbody>\n    <tr>\n      <td>Cell</td>\n    </tr>\n  </tbody>\n</table>',
   );
 });
+
+test('do not add blank lines to block tags inside unordered lists', () => {
+  expect(
+    cleanHtml(
+      '<ul><li><p><a href="#ref-ftn1">^</a></p><div><p>This is a footnote</p></div></li><li><p><a href="#ref-ftn2">^</a></p><div><p>This is another footnote</p></div></li></ul>',
+    ),
+  ).toBe(
+    '<ul>\n  <li>\n    <p><a href="#ref-ftn1">^</a></p>\n    <div>\n      <p>This is a footnote</p>\n    </div>\n  </li>\n  <li>\n    <p><a href="#ref-ftn2">^</a></p>\n    <div>\n      <p>This is another footnote</p>\n    </div>\n  </li>\n</ul>',
+  );
+});
