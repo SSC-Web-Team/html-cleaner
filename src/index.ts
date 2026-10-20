@@ -4,6 +4,7 @@ import { cleanAttributes } from './cleaners/attributes.ts';
 import { cleanElements } from './cleaners/elements.ts';
 import { cleanFormatting } from './cleaners/formatting.ts';
 import { addDateTimeTags } from './cleaners/date-time.ts';
+import { unwrapOutlookSafeLinks } from './cleaners/outlook-safe-links.ts';
 
 export function cleanHtml(html: string): string {
   // Simple text-based cleanup
@@ -14,6 +15,7 @@ export function cleanHtml(html: string): string {
   const { document } = dom.window;
 
   // Run cleanup modules
+  unwrapOutlookSafeLinks(document);
   cleanAttributes(document);
   cleanElements(document);
   cleanFormatting(document);
