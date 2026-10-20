@@ -52,6 +52,8 @@ export function cleanElements(document: Document): void {
     unwrapBySelector(document, selector);
   });
 
+  unwrapSingleParagraphsInContainers(document);
+
   // Remove underline tags that redundantly wrap links or their contents
   unwrapBySelector(document, 'a u, u:has(a)');
 
@@ -72,4 +74,22 @@ export function cleanElements(document: Document): void {
 
   // Merge adjacent text nodes
   document.normalize();
+}
+
+function unwrapSingleParagraphsInContainers(document: Document): void {
+  document.querySelectorAll('li, td, th').forEach((container) => {
+    const paragraphs = container.querySelectorAll('p');
+
+    if (paragraphs.length !== 1) {
+      return;
+    }
+
+    const paragraph = paragraphs[0];
+
+    while (paragraph.firstChild) {
+      paragraph.parentNode?.insertBefore(paragraph.firstChild, paragraph);
+    }
+
+    paragraph.remove();
+  });
 }

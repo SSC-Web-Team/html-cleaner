@@ -26,9 +26,9 @@ test('collapse whitespace inside inline tags without trimming their boundaries',
 
 test('trim block and heading boundaries', () => {
   const initialHtml =
-    '<p>  Paragraph  </p><ul><li> Item </li></ul><table><tbody><tr><td> Cell </td><th> Heading cell </th></tr></tbody></table><div> Division </div><section> Section </section><h2> Heading </h2>';
+    '<p>  Paragraph  </p><ul><li> Item </li></ul><table><tbody><tr><td> Cell </td><th> Heading cell </th></tr></tbody></table><h2> Heading </h2>';
   const finalHtml =
-    '<p>Paragraph</p><ul><li>Item</li></ul><table><tbody><tr><td>Cell</td><th>Heading cell</th></tr></tbody></table><div>Division</div><section>Section</section><h2>Heading</h2>';
+    '<p>Paragraph</p><ul><li>Item</li></ul><table><tbody><tr><td>Cell</td><th>Heading cell</th></tr></tbody></table><h2>Heading</h2>';
   const dom = new JSDOM(initialHtml);
   const { document } = dom.window;
 

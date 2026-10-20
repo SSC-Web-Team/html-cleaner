@@ -45,3 +45,29 @@ test('unwrap u tag wrapping a link', () => {
 
   expect(document.body.innerHTML).toBe(finalHtml);
 });
+
+test('unwrap a single paragraph from list items and table cells', () => {
+  const dom = new JSDOM(
+    '<ul><li><p>List item</p></li></ul><table><tbody><tr><td><p>Cell</p></td><th><p>Header</p></th></tr></tbody></table>',
+  );
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe(
+    '<ul><li>List item</li></ul><table><tbody><tr><td>Cell</td><th>Header</th></tr></tbody></table>',
+  );
+});
+
+test('keep paragraphs when a list item or table cell contains more than one', () => {
+  const dom = new JSDOM(
+    '<ul><li><p>First</p><p>Second</p></li></ul><table><tbody><tr><td><p>First</p><p>Second</p></td><th><p>Only paragraph</p></th></tr></tbody></table>',
+  );
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe(
+    '<ul><li><p>First</p><p>Second</p></li></ul><table><tbody><tr><td><p>First</p><p>Second</p></td><th>Only paragraph</th></tr></tbody></table>',
+  );
+});

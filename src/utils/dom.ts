@@ -70,7 +70,7 @@ export function normalizeText(document: Document) {
   });
 
   document
-    .querySelectorAll('p, li, td, th, div, section, h1, h2, h3, h4, h5, h6')
+    .querySelectorAll('p, li, td, th, h1, h2, h3, h4, h5, h6')
     .forEach((element) => {
       trimElementBoundarySpaces(element);
     });
