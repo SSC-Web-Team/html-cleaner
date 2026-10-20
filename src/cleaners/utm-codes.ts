@@ -1,14 +1,16 @@
-const UTM_SOURCE = 'myssc';
 const UTM_MEDIUM = 'homepage';
-const UTM_CAMPAIGNS = new Set([
-  'promo_block',
-  'upcoming_events',
-  'latest_news',
-  'get_help',
+const UTM_COMBINATIONS = new Set([
+  'myssc:promo_block',
+  'myssc:upcoming_events',
+  'myssc:latest_news',
+  'myssc:get_help',
+  'myssc:most_requested',
+  'servinggov:most_requested',
+  'servinggov:digital_together',
 ]);
 const URL_BASE = 'https://html-cleaner.invalid';
 
-export function removeMySscUtmCodes(document: Document): void {
+export function removeHomepageUtmCodes(document: Document): void {
   document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((anchor) => {
     const href = anchor.getAttribute('href');
 
@@ -26,9 +28,10 @@ export function removeMySscUtmCodes(document: Document): void {
 
     if (
       (linkUrl.protocol !== 'http:' && linkUrl.protocol !== 'https:') ||
-      linkUrl.searchParams.get('utm_source') !== UTM_SOURCE ||
       linkUrl.searchParams.get('utm_medium') !== UTM_MEDIUM ||
-      !UTM_CAMPAIGNS.has(linkUrl.searchParams.get('utm_campaign') ?? '')
+      !UTM_COMBINATIONS.has(
+        `${linkUrl.searchParams.get('utm_source')}:${linkUrl.searchParams.get('utm_campaign')}`,
+      )
     ) {
       return;
     }

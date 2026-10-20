@@ -7,7 +7,7 @@ import { cleanFormatting } from './cleaners/formatting.ts';
 import { addDateTimeTags } from './cleaners/date-time.ts';
 import { unwrapOutlookSafeLinks } from './cleaners/outlook-safe-links.ts';
 import { cleanFrenchTypography } from './cleaners/french-typography.ts';
-import { removeMySscUtmCodes } from './cleaners/utm-codes.ts';
+import { removeHomepageUtmCodes } from './cleaners/utm-codes.ts';
 
 export type ContentLanguage = 'en' | 'fr';
 
@@ -21,7 +21,7 @@ export function cleanHtml(html: string, language: ContentLanguage = 'en'): strin
 
   // Run cleanup modules
   unwrapOutlookSafeLinks(document);
-  removeMySscUtmCodes(document);
+  removeHomepageUtmCodes(document);
   cleanAttributes(document);
   cleanElements(document);
   cleanFormatting(document);
