@@ -74,14 +74,14 @@ test('keep paragraphs when a list item or table cell contains more than one', ()
 
 test('unwrap strong tags from table headers and heading elements', () => {
   const dom = new JSDOM(
-    '<table><thead><tr><th><strong>Column</strong></th></tr></thead></table><h1><strong>Title</strong></h1><h2>Sub <strong>heading</strong></h2><h3><strong>Third</strong></h3><h4><strong>Fourth</strong></h4><h5><strong>Fifth</strong></h5><h6><strong>Sixth</strong></h6>',
+    '<table><thead><tr><th><strong>Column</strong></th><th><b>Column 2</b></th></tr></thead></table><h1><strong>Title</strong></h1><h2>Sub <strong>heading</strong></h2><h3><strong>Third</strong></h3><h4><strong>Fourth</strong></h4><h5><strong>Fifth</strong></h5><h6><strong>Sixth</strong></h6><h2>Sub <b>heading</b></h2>',
   );
   const { document } = dom.window;
 
   cleanElements(document);
 
   expect(document.body.innerHTML).toBe(
-    '<table><thead><tr><th>Column</th></tr></thead></table><h1>Title</h1><h2>Sub heading</h2><h3>Third</h3><h4>Fourth</h4><h5>Fifth</h5><h6>Sixth</h6>',
+    '<table><thead><tr><th>Column</th><th>Column 2</th></tr></thead></table><h1>Title</h1><h2>Sub heading</h2><h3>Third</h3><h4>Fourth</h4><h5>Fifth</h5><h6>Sixth</h6><h2>Sub heading</h2>',
   );
 });
 
