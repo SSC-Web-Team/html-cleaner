@@ -14,7 +14,7 @@ test('remove del tag', () => {
 });
 
 test('unwrap span tag', () => {
-  const initialHtml = '<div>This is a <span>special</span> test</div>';
+  const initialHtml = '<div>This is a <span>special</span> test</div><p></p><em>&nbsp;</em><h1> &nbsp;</h1>';
   const finalHtml = '<div>This is a special test</div>';
   const dom = new JSDOM(initialHtml);
   const { document } = dom.window;
