@@ -44,7 +44,20 @@ test('recognize bold and strong table cells as header rows', () => {
 
   expect(document.querySelector('thead')?.textContent).toBe('Bold headerStrong header');
   expect(document.querySelector('tbody')?.textContent).toBe('DataMore data');
-  expect(document.querySelector('thead tr')?.classList.contains('active')).toBe(false);
+  expect(document.querySelector('thead tr')?.classList.contains('active')).toBe(true);
+});
+
+test('convert first-row bold data cells to header cells', () => {
+  const dom = new JSDOM(
+    '<table><tr><td class="label"><strong>First header</strong></td><td><b>Second header</b></td></tr><tr><td>Data</td><td>More data</td></tr></table>',
+  );
+  const { document } = dom.window;
+
+  cleanFormatting(document);
+
+  expect(document.body.innerHTML).toBe(
+    '<table class="table table-condensed table-bordered"><thead><tr class="active"><th class="label">First header</th><th>Second header</th></tr></thead><tbody><tr><td>Data</td><td>More data</td></tr></tbody></table>',
+  );
 });
 
 test('put all rows in tbody when there is no header row', () => {

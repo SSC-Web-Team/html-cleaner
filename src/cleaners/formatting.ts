@@ -59,6 +59,10 @@ function formatTables(document: Document): void {
     if (headerRows.length > 0) {
       const header = thead ?? document.createElement('thead');
 
+      if (isBoldDataHeaderRow(headerRows[0])) {
+        convertCellsToHeaders(headerRows[0], document);
+      }
+
       if (Array.from(headerRows[0].cells).every((cell) => cell.tagName === 'TH')) {
         headerRows[0].classList.add('active');
       }
@@ -90,12 +94,47 @@ function isHeaderRow(row: HTMLTableRowElement): boolean {
     return true;
   }
 
-  return cells.every(
+  return isBoldDataHeaderRow(row);
+}
+
+function isBoldDataHeaderRow(row: HTMLTableRowElement): boolean {
+  const cells = Array.from(row.cells);
+
+  return cells.length > 0 && cells.every(
     (cell) =>
       cell.tagName === 'TD' &&
       cell.children.length === 1 &&
       (cell.firstElementChild?.tagName === 'STRONG' || cell.firstElementChild?.tagName === 'B'),
   );
+}
+
+function convertCellsToHeaders(row: HTMLTableRowElement, document: Document): void {
+  Array.from(row.cells).forEach((cell) => {
+    const headerCell = document.createElement('th');
+
+    Array.from(cell.attributes).forEach((attribute) => {
+      headerCell.setAttribute(attribute.name, attribute.value);
+    });
+
+    while (cell.firstChild) {
+      headerCell.appendChild(cell.firstChild);
+    }
+
+    const boldElement = headerCell.firstElementChild;
+
+    if (
+      headerCell.childElementCount === 1 &&
+      (boldElement?.tagName === 'STRONG' || boldElement?.tagName === 'B')
+    ) {
+      while (boldElement.firstChild) {
+        headerCell.insertBefore(boldElement.firstChild, boldElement);
+      }
+
+      boldElement.remove();
+    }
+
+    cell.replaceWith(headerCell);
+  });
 }
 
 function moveTrailingBreaksOutsideBoldElements(document: Document): void {
