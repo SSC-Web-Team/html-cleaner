@@ -37,6 +37,16 @@ test('apply French typography only when French is selected', () => {
 
 test('beautify cleaned HTML with indentation', () => {
   expect(cleanHtml('<section><p>First</p><p>Second</p></section>')).toBe(
-    '<section>\n  <p>First</p>\n  <p>Second</p>\n</section>',
+    '<section>\n\n  <p>First</p>\n\n  <p>Second</p>\n</section>',
+  );
+});
+
+test('add blank lines before headings, lists, divs, and tables', () => {
+  expect(
+    cleanHtml(
+      '<p>Paragraph</p><h2>Heading</h2><ul><li>Item</li></ul><ol><li>Numbered</li></ol><div>Division</div><table><tr><td>Cell</td></tr></table>',
+    ),
+  ).toBe(
+    '<p>Paragraph</p>\n\n<h2>Heading</h2>\n\n<ul>\n  <li>Item</li>\n</ul>\n\n<ol>\n  <li>Numbered</li>\n</ol>\n\n<div>Division</div>\n\n<table class="table table-condensed table-bordered">\n  <tbody>\n    <tr>\n      <td>Cell</td>\n    </tr>\n  </tbody>\n</table>',
   );
 });

@@ -35,6 +35,7 @@ export function cleanHtml(html: string, language: ContentLanguage = 'en'): strin
     indent_size: 2,
     max_preserve_newlines: 1,
     preserve_newlines: true,
+    extra_liners: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'div', 'table'],
     wrap_line_length: 0,
   });
 }
