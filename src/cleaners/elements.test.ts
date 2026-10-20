@@ -24,6 +24,17 @@ test('unwrap span tag', () => {
   expect(document.body.innerHTML).toBe(finalHtml);
 });
 
+test('unwrap ins tag', () => {
+  const initialHtml = '<div>This is a <ins>special</ins> test</div>';
+  const finalHtml = '<div>This is a special test</div>';
+  const dom = new JSDOM(initialHtml);
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe(finalHtml);
+});
+
 test('unwrap u tag inside a link', () => {
   const initialHtml = '<div><a href="https://example.com"><u>link</u></a></div>';
   const finalHtml = '<div><a href="https://example.com">link</a></div>';

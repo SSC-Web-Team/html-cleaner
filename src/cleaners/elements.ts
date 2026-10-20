@@ -34,7 +34,7 @@ const elementsToRemoveIfEmpty = [
   'u',
   'ul',
 ];
-const elementsToUnwrap = ['font', 'span'];
+const elementsToUnwrap = ['font', 'span', 'ins'];
 
 export function cleanElements(document: Document): void {
   // Remove all specified tags and their contents
