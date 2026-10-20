@@ -60,3 +60,13 @@ test('do not add blank lines to block tags inside unordered lists', () => {
     '<ul>\n  <li>\n    <p><a href="#ref-ftn1">^</a></p>\n    <div>\n      <p>This is a footnote</p>\n    </div>\n  </li>\n  <li>\n    <p><a href="#ref-ftn2">^</a></p>\n    <div>\n      <p>This is another footnote</p>\n    </div>\n  </li>\n</ul>',
   );
 });
+
+test('omit the blank line before the first paragraph in each table cell', () => {
+  expect(
+    cleanHtml(
+      '<table><tr><td><p>Support equitable recruitment and promotion of Indigenous employees at SSC.</p><p><strong>Program:</strong> Internal Services</p></td></tr></table>',
+    ),
+  ).toBe(
+    '<table class="table table-condensed table-bordered">\n  <tbody>\n    <tr>\n      <td>\n        <p>Support equitable recruitment and promotion of Indigenous employees at SSC.</p>\n\n        <p><strong>Program:</strong> Internal Services</p>\n      </td>\n    </tr>\n  </tbody>\n</table>',
+  );
+});

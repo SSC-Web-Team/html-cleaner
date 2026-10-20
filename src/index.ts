@@ -72,16 +72,35 @@ const voidTags = new Set([
 ]);
 
 function addBlockSpacing(html: string): string {
-  const openTags: string[] = [];
+  const openTags: { name: string; hasParagraph: boolean }[] = [];
   const lines = html.split('\n');
   const formattedLines: string[] = [];
 
   lines.forEach((line) => {
     const firstTag = line.match(/^\s*<([a-z][\w:-]*)\b[^>]*>/i);
     const firstTagName = firstTag?.[1].toLowerCase();
+    let cell: (typeof openTags)[number] | undefined;
 
-    if (firstTagName && tagsWithSpacing.has(firstTagName) && !openTags.includes('ul')) {
-      if (formattedLines.length > 0 && formattedLines[formattedLines.length - 1] !== '') {
+    for (let index = openTags.length - 1; index >= 0; index--) {
+      if (openTags[index].name === 'td') {
+        cell = openTags[index];
+        break;
+      }
+    }
+
+    const isFirstParagraphInCell =
+      firstTagName === 'p' && cell !== undefined && !cell.hasParagraph;
+
+    if (
+      isFirstParagraphInCell ||
+      (firstTagName && tagsWithSpacing.has(firstTagName) && !openTags.some((tag) => tag.name === 'ul'))
+    ) {
+      if (isFirstParagraphInCell && cell) {
+        cell.hasParagraph = true;
+      } else if (
+        formattedLines.length > 0 &&
+        formattedLines[formattedLines.length - 1] !== ''
+      ) {
         formattedLines.push('');
       }
     }
@@ -90,13 +109,20 @@ function addBlockSpacing(html: string): string {
       const name = tagName.toLowerCase();
 
       if (closing) {
-        const index = openTags.lastIndexOf(name);
+        let index = -1;
+
+        for (let currentIndex = openTags.length - 1; currentIndex >= 0; currentIndex--) {
+          if (openTags[currentIndex].name === name) {
+            index = currentIndex;
+            break;
+          }
+        }
 
         if (index !== -1) {
           openTags.length = index;
         }
       } else if (!voidTags.has(name)) {
-        openTags.push(name);
+        openTags.push({ name, hasParagraph: false });
       }
     }
 
