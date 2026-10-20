@@ -5,8 +5,11 @@ import { cleanElements } from './cleaners/elements.ts';
 import { cleanFormatting } from './cleaners/formatting.ts';
 import { addDateTimeTags } from './cleaners/date-time.ts';
 import { unwrapOutlookSafeLinks } from './cleaners/outlook-safe-links.ts';
+import { cleanFrenchTypography } from './cleaners/french-typography.ts';
 
-export function cleanHtml(html: string): string {
+export type ContentLanguage = 'en' | 'fr';
+
+export function cleanHtml(html: string, language: ContentLanguage = 'en'): string {
   // Simple text-based cleanup
   html = html.trim();
 
@@ -20,6 +23,10 @@ export function cleanHtml(html: string): string {
   cleanElements(document);
   cleanFormatting(document);
   addDateTimeTags(document);
+
+  if (language === 'fr') {
+    cleanFrenchTypography(document);
+  }
 
   const result = document.body?.innerHTML ?? '';
 

@@ -9,9 +9,21 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
+    const language = await vscode.window.showQuickPick(
+      [
+        { label: 'English', value: 'en' as const },
+        { label: 'French', value: 'fr' as const },
+      ],
+      { placeHolder: 'Select the language of this HTML' },
+    );
+
+    if (!language) {
+      return;
+    }
+
     const { document } = editor;
     const html = document.getText();
-    const cleaned = cleanHtml(html);
+    const cleaned = cleanHtml(html, language.value);
     const range = new vscode.Range(document.positionAt(0), document.positionAt(html.length));
 
     const success = await editor.edit((editBuilder) => {
