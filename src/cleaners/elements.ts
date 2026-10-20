@@ -37,6 +37,8 @@ const elementsToRemoveIfEmpty = [
 const elementsToUnwrap = ['font', 'span', 'ins'];
 
 export function cleanElements(document: Document): void {
+  removeWordComments(document);
+
   // Remove all specified tags and their contents
   elementsToRemove.forEach((selector) => {
     removeBySelector(document, selector);
@@ -51,6 +53,9 @@ export function cleanElements(document: Document): void {
   elementsToUnwrap.forEach((selector) => {
     unwrapBySelector(document, selector);
   });
+
+  // Unwrap Word bookmark anchors that do not link to another location
+  unwrapBySelector(document, 'a:not([href])');
 
   unwrapBySelector(document, 'th strong, h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong, th b, h1 b, h2 b, h3 b, h4 b, h5 b, h6 b');
   unwrapDuplicateStrongTags(document);
@@ -78,6 +83,40 @@ export function cleanElements(document: Document): void {
 
   // Merge adjacent text nodes
   document.normalize();
+}
+
+function removeWordComments(document: Document): void {
+  document
+    .querySelectorAll('a[href^="#_msocom_"], a[id^="_anchor_"]')
+    .forEach((anchor) => anchor.remove());
+
+  const commentBodies = Array.from(document.querySelectorAll<HTMLElement>('[id]')).filter((el) =>
+    /^_com_\d+$/i.test(el.id),
+  );
+
+  const commentContainers = new Set<Element>();
+
+  commentBodies.forEach((commentBody) => {
+    let ancestor = commentBody.parentElement;
+
+    while (ancestor && ancestor !== document.body) {
+      if (
+        ancestor.tagName === 'DIV' &&
+        Array.from(ancestor.children).some((child) => child.tagName === 'HR')
+      ) {
+        commentContainers.add(ancestor);
+        break;
+      }
+
+      ancestor = ancestor.parentElement;
+    }
+  });
+
+  if (commentContainers.size > 0) {
+    commentContainers.forEach((container) => container.remove());
+  } else {
+    commentBodies.forEach((commentBody) => commentBody.remove());
+  }
 }
 
 function unwrapSingleParagraphsInContainers(document: Document): void {

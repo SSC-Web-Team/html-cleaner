@@ -113,3 +113,27 @@ test.each(['strong', 'b', 'i', 'em'])('merge adjacent <%s> tags', (tag) => {
 
   expect(document.body.innerHTML).toBe(`<p><${tag}>this is bold</${tag}></p>`);
 });
+
+test('remove Word comment references and trailing comment block', () => {
+  const dom = new JSDOM(
+    `<p><a>Praesent</a> <a href="#_msocom_1" id="_anchor_1" data-ck-unsafe-attribute-onmouseover="msoCommentShow('_anchor_1','_com_1')" data-ck-unsafe-attribute-onmouseout="msoCommentHide('_com_1')" language="JavaScript">[EL1]</a> <a href="#_msocom_2" id="_anchor_2" data-ck-unsafe-attribute-onmouseover="msoCommentShow('_anchor_2','_com_2')" data-ck-unsafe-attribute-onmouseout="msoCommentHide('_com_2')" language="JavaScript">[EL2]</a></p><div><hr align="left" size="1"><div><div id="_com_1" language="JavaScript"><p><a href="#_msoanchor_1">[EL1]</a>This is a comment</p></div></div><div><div id="_com_2" language="JavaScript"><p><a href="#_msoanchor_2">[EL2]</a>I approve this comment</p></div></div></div>`,
+  );
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe('<p>Praesent</p>');
+});
+
+test('preserve regular linked text while unwrapping empty bookmark anchors', () => {
+  const dom = new JSDOM(
+    '<p><a>Bookmark text</a> <a href="https://example.com">Regular link</a></p>',
+  );
+  const { document } = dom.window;
+
+  cleanElements(document);
+
+  expect(document.body.innerHTML).toBe(
+    '<p>Bookmark text <a href="https://example.com">Regular link</a></p>',
+  );
+});
