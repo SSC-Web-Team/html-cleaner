@@ -159,10 +159,35 @@ function hasBoundarySpace(node: Node, before: boolean): boolean {
 }
 
 function trimBoundaryText(node: Node | null, leading: boolean): void {
-  if (node?.nodeType !== 3) {
+  if (!node) {
     return;
   }
 
-  const textNode = node as Text;
+  let textNode: Text | undefined;
+
+  if (node.nodeType === 3) {
+    textNode = node as Text;
+  } else if (node.nodeType === 1) {
+    const ownerDocument = node.ownerDocument;
+
+    if (!ownerDocument) {
+      return;
+    }
+
+    const walker = ownerDocument.createTreeWalker(node, SHOW_TEXT);
+    const textNodes: Text[] = [];
+    let child: Node | null;
+
+    while ((child = walker.nextNode())) {
+      textNodes.push(child as Text);
+    }
+
+    textNode = leading ? textNodes[0] : textNodes[textNodes.length - 1];
+  }
+
+  if (!textNode) {
+    return;
+  }
+
   textNode.data = leading ? textNode.data.replace(/^ +/, '') : textNode.data.replace(/ +$/, '');
 }

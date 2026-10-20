@@ -63,3 +63,16 @@ test('normalize nonbreaking spaces and spacing around breaks', () => {
 
   expect(document.body.innerHTML).toBe('<p>Text.<br>Next</p>');
 });
+
+test('remove trailing nonbreaking space inside an element before a break', () => {
+  const dom = new JSDOM(
+    '<p><strong>a, luctus ut leo.&nbsp;</strong><br>\n    Phasellus eu elit sollicitudin, porttitor</p>',
+  );
+  const { document } = dom.window;
+
+  normalizeText(document);
+
+  expect(document.body.innerHTML).toBe(
+    '<p><strong>a, luctus ut leo.</strong><br>Phasellus eu elit sollicitudin, porttitor</p>',
+  );
+});

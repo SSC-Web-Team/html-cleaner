@@ -151,14 +151,39 @@ function mergeAdjacentBoldTags(document: Document): void {
   document.querySelectorAll('strong, b, em, i').forEach((element) => {
     let next = element.nextSibling;
 
+    while (next?.nodeType === 3 && !next.textContent?.trim()) {
+      const whitespace = next;
+      next = next.nextSibling;
+
+      if (next?.nodeName !== element.nodeName) {
+        break;
+      }
+
+      element.appendChild(document.createTextNode(' '));
+      whitespace.remove();
+    }
+
     while (next?.nodeName === element.nodeName) {
       while (next.firstChild) {
         element.appendChild(next.firstChild);
       }
 
       const merged = next;
-      next = next.nextSibling;
       merged.remove();
+
+      next = element.nextSibling;
+
+      while (next?.nodeType === 3 && !next.textContent?.trim()) {
+        const whitespace = next;
+        next = next.nextSibling;
+
+        if (next?.nodeName !== element.nodeName) {
+          break;
+        }
+
+        element.appendChild(document.createTextNode(' '));
+        whitespace.remove();
+      }
     }
   });
 }
