@@ -8,10 +8,16 @@ import { addDateTimeTags } from './cleaners/date-time.ts';
 import { unwrapOutlookSafeLinks } from './cleaners/outlook-safe-links.ts';
 import { cleanFrenchTypography } from './cleaners/french-typography.ts';
 import { removeHomepageUtmCodes } from './cleaners/utm-codes.ts';
+import { rewriteCanadaLinks } from './cleaners/canada-links.ts';
 
 export type ContentLanguage = 'en' | 'fr';
+export type ContentPlatform = 'myssc' | 'canada';
 
-export function cleanHtml(html: string, language: ContentLanguage = 'en'): string {
+export function cleanHtml(
+  html: string,
+  language: ContentLanguage = 'en',
+  platform: ContentPlatform = 'myssc',
+): string {
   // Simple text-based cleanup
   html = html.trim();
 
@@ -21,6 +27,9 @@ export function cleanHtml(html: string, language: ContentLanguage = 'en'): strin
 
   // Run cleanup modules
   unwrapOutlookSafeLinks(document);
+  if (platform === 'canada') {
+    rewriteCanadaLinks(document);
+  }
   removeHomepageUtmCodes(document);
   cleanAttributes(document);
   cleanElements(document);

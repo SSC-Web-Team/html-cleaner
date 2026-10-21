@@ -21,9 +21,21 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
+    const platform = await vscode.window.showQuickPick(
+      [
+        { label: 'MySSC+ / SG', value: 'myssc' as const },
+        { label: 'Canada.ca', value: 'canada' as const },
+      ],
+      { placeHolder: 'Select the platform for this HTML' },
+    );
+
+    if (!platform) {
+      return;
+    }
+
     const { document } = editor;
     const html = document.getText();
-    const cleaned = cleanHtml(html, language.value);
+    const cleaned = cleanHtml(html, language.value, platform.value);
     const range = new vscode.Range(document.positionAt(0), document.positionAt(html.length));
 
     const success = await editor.edit((editBuilder) => {
