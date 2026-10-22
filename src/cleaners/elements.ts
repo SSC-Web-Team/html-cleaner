@@ -34,7 +34,8 @@ const elementsToRemoveIfEmpty = [
   'u',
   'ul',
 ];
-const elementsToUnwrap = ['font', 'span', 'ins'];
+// Hidden WET text (e.g. footnote labels) must stay wrapped
+const elementsToUnwrap = ['font', 'span:not(.wb-inv)', 'ins'];
 
 export function cleanElements(document: Document): void {
   removeWordComments(document);

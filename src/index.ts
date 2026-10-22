@@ -9,6 +9,8 @@ import { unwrapOutlookSafeLinks } from './cleaners/outlook-safe-links.ts';
 import { cleanFrenchTypography } from './cleaners/french-typography.ts';
 import { removeHomepageUtmCodes } from './cleaners/utm-codes.ts';
 import { rewriteCanadaLinks } from './cleaners/canada-links.ts';
+import { addTableOfContents } from './cleaners/toc.ts';
+import { addFootnotes } from './cleaners/footnotes.ts';
 
 export type ContentLanguage = 'en' | 'fr';
 export type ContentPlatform = 'myssc' | 'canada';
@@ -43,6 +45,47 @@ export function cleanHtml(
   const result = document.body?.innerHTML ?? '';
 
   const formatted = beautify.html(result, {
+    indent_size: 2,
+    max_preserve_newlines: 1,
+    preserve_newlines: true,
+    wrap_line_length: 0,
+  });
+
+  return addBlockSpacing(formatted);
+}
+
+export function generateToc(
+  html: string,
+  language: ContentLanguage = 'en',
+  platform: ContentPlatform = 'myssc',
+): string {
+  const { document } = new JSDOM(html.trim()).window;
+
+  addTableOfContents(document, language, platform);
+
+  return formatDocument(document);
+}
+
+// Returns null when the HTML contains no footnotes to convert
+export function generateFootnotes(
+  html: string,
+  language: ContentLanguage = 'en',
+  platform: ContentPlatform = 'myssc',
+): string | null {
+  const { document } = new JSDOM(html.trim()).window;
+
+  if (!addFootnotes(document, language, platform)) {
+    return null;
+  }
+
+  // The serializer leaves < and > raw in attributes; the MySSC+ component expects them escaped
+  return formatDocument(document).replace(/data-text="([^"]*)"/g, (_, value: string) =>
+    `data-text="${value.replace(/</g, '&lt;').replace(/>/g, '&gt;')}"`,
+  );
+}
+
+function formatDocument(document: Document): string {
+  const formatted = beautify.html(document.body?.innerHTML ?? '', {
     indent_size: 2,
     max_preserve_newlines: 1,
     preserve_newlines: true,
