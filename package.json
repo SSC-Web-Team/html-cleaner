@@ -47,6 +47,10 @@
       {
         "command": "html-cleaner.cleanHtml",
         "title": "HTML Cleaner: Clean HTML"
+      },
+      {
+        "command": "html-cleaner.generateToc",
+        "title": "HTML Cleaner: Generate TOC"
       }
     ]
   },
