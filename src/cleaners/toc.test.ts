@@ -74,15 +74,8 @@ test('wraps the TOC in a labelled nav', () => {
   );
 });
 
-test('places the TOC before the first h2 when an h1 is present', () => {
+test('always places the TOC first, even above the h1', () => {
   const document = run('<p>Intro</p><h1>Title</h1><p>Text</p><h2>A</h2>');
 
-  expect(document.querySelector('#toc1')?.previousElementSibling?.id).toBe('toc-nav');
-  expect(document.querySelector('h1')?.nextElementSibling?.tagName).toBe('P');
-});
-
-test('places the TOC after the h1 when there is no h2', () => {
-  const document = run('<h1>Title</h1><p>Text</p><h3>A</h3>');
-
-  expect(document.querySelector('h1')?.nextElementSibling?.id).toBe('toc-nav');
+  expect(document.body.firstElementChild?.id).toBe('toc-nav');
 });
