@@ -9,6 +9,7 @@ import { unwrapOutlookSafeLinks } from './cleaners/outlook-safe-links.ts';
 import { cleanFrenchTypography } from './cleaners/french-typography.ts';
 import { removeHomepageUtmCodes } from './cleaners/utm-codes.ts';
 import { rewriteCanadaLinks } from './cleaners/canada-links.ts';
+import { addTableOfContents } from './cleaners/toc.ts';
 
 export type ContentLanguage = 'en' | 'fr';
 export type ContentPlatform = 'myssc' | 'canada';
@@ -43,6 +44,25 @@ export function cleanHtml(
   const result = document.body?.innerHTML ?? '';
 
   const formatted = beautify.html(result, {
+    indent_size: 2,
+    max_preserve_newlines: 1,
+    preserve_newlines: true,
+    wrap_line_length: 0,
+  });
+
+  return addBlockSpacing(formatted);
+}
+
+export function generateToc(
+  html: string,
+  language: ContentLanguage = 'en',
+  platform: ContentPlatform = 'myssc',
+): string {
+  const { document } = new JSDOM(html.trim()).window;
+
+  addTableOfContents(document, language, platform);
+
+  const formatted = beautify.html(document.body?.innerHTML ?? '', {
     indent_size: 2,
     max_preserve_newlines: 1,
     preserve_newlines: true,
