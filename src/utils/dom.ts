@@ -60,8 +60,8 @@ export function normalizeText(document: Document) {
       .replaceAll(/([([{]) +/g, '$1');
   });
 
-  document.querySelectorAll('a').forEach((anchor) => {
-    moveAnchorBoundarySpaces(document, anchor);
+  document.querySelectorAll('a, cite').forEach((element) => {
+    moveBoundarySpacesOutside(document, element);
   });
 
   document.querySelectorAll('br').forEach((lineBreak) => {
@@ -101,19 +101,19 @@ function trimElementBoundarySpaces(element: Element): void {
   textNodes[textNodes.length - 1].data = textNodes[textNodes.length - 1].data.replace(/ +$/, '');
 }
 
-function moveAnchorBoundarySpaces(document: Document, anchor: Element): void {
-  const textNodes = getTextNodes(anchor);
+export function moveBoundarySpacesOutside(document: Document, element: Element): void {
+  const textNodes = getTextNodes(element);
   const firstText = textNodes[0];
   const lastText = textNodes[textNodes.length - 1];
 
   if (firstText?.data.startsWith(' ')) {
     firstText.data = firstText.data.replace(/^ +/, '');
-    ensureBoundarySpace(document, anchor, true);
+    ensureBoundarySpace(document, element, true);
   }
 
   if (lastText?.data.endsWith(' ')) {
     lastText.data = lastText.data.replace(/ +$/, '');
-    ensureBoundarySpace(document, anchor, false);
+    ensureBoundarySpace(document, element, false);
   }
 }
 
