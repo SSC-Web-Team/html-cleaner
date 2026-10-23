@@ -47,6 +47,10 @@
       {
         "command": "html-cleaner.cleanHtml",
         "title": "HTML Cleaner: Clean HTML"
+      },
+      {
+        "command": "html-cleaner.validateHtml",
+        "title": "HTML Cleaner: Validate HTML (Nu HTML Checker)"
       }
     ]
   },
