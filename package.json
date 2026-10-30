@@ -49,6 +49,10 @@
         "title": "HTML Cleaner: Clean HTML"
       },
       {
+        "command": "html-cleaner.generateToc",
+        "title": "HTML Cleaner: Generate TOC"
+      },
+      {
         "command": "html-cleaner.validateHtml",
         "title": "HTML Cleaner: Validate HTML (Nu HTML Checker)"
       }

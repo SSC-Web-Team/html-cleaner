@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { cleanHtml } from './index.ts';
+import { cleanHtml, generateToc } from './index.ts';
 import { validateHtml } from './validator/nu-validator.ts';
 import { getEmphasisOccurrences, type EmphasisAction } from './cleaners/emphasis.ts';
 
@@ -48,7 +48,9 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
       if (!applied) {
-        vscode.window.showErrorMessage('Unable to apply HTML cleanup before reviewing emphasis tags.');
+        vscode.window.showErrorMessage(
+          'Unable to apply HTML cleanup before reviewing emphasis tags.',
+        );
         return;
       }
     }
@@ -134,6 +136,51 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  const tocDisposable = vscode.commands.registerCommand('html-cleaner.generateToc', async () => {
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+      return;
+    }
+
+    const language = await vscode.window.showQuickPick(
+      [
+        { label: 'English', value: 'en' as const },
+        { label: 'French', value: 'fr' as const },
+      ],
+      { placeHolder: 'Select the language of the table of contents' },
+    );
+
+    if (!language) {
+      return;
+    }
+
+    const platform = await vscode.window.showQuickPick(
+      [
+        { label: 'MySSC+ / SG', value: 'myssc' as const },
+        { label: 'Canada.ca', value: 'canada' as const },
+      ],
+      { placeHolder: 'Select the platform for this table of contents' },
+    );
+
+    if (!platform) {
+      return;
+    }
+
+    const { document } = editor;
+    const html = document.getText();
+    const result = generateToc(html, language.value, platform.value);
+    const range = new vscode.Range(document.positionAt(0), document.positionAt(html.length));
+
+    const success = await editor.edit((editBuilder) => {
+      editBuilder.replace(range, result);
+    });
+
+    if (success) {
+      vscode.window.showInformationMessage('Table of contents generated successfully.');
+    }
+  });
+
   const diagnostics = vscode.languages.createDiagnosticCollection('html-cleaner-nu');
 
   const validate = vscode.commands.registerCommand('html-cleaner.validateHtml', async () => {
@@ -200,7 +247,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  context.subscriptions.push(disposable, validate, diagnostics);
+  context.subscriptions.push(disposable, tocDisposable, validate, diagnostics);
 }
 
 export function deactivate() {}
