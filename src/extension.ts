@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { cleanHtml, generateToc } from './index.ts';
+import { cleanHtml, generateFootnotes, generateToc } from './index.ts';
 import { validateHtml } from './validator/nu-validator.ts';
 import { getEmphasisOccurrences, type EmphasisAction } from './cleaners/emphasis.ts';
 
@@ -181,6 +181,59 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  const footnotesDisposable = vscode.commands.registerCommand(
+    'html-cleaner.generateFootnotes',
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+
+      if (!editor) {
+        return;
+      }
+
+      const language = await vscode.window.showQuickPick(
+        [
+          { label: 'English', value: 'en' as const },
+          { label: 'French', value: 'fr' as const },
+        ],
+        { placeHolder: 'Select the language of the footnotes' },
+      );
+
+      if (!language) {
+        return;
+      }
+
+      const platform = await vscode.window.showQuickPick(
+        [
+          { label: 'MySSC+ / SG', value: 'myssc' as const },
+          { label: 'Canada.ca', value: 'canada' as const },
+        ],
+        { placeHolder: 'Select the platform for these footnotes' },
+      );
+
+      if (!platform) {
+        return;
+      }
+
+      const { document } = editor;
+      const html = document.getText();
+      const result = generateFootnotes(html, language.value, platform.value);
+
+      if (result === null) {
+        vscode.window.showWarningMessage('No footnotes found. Each footnote needs a reference in the text that links to it.');
+        return;
+      }
+
+      const range = new vscode.Range(document.positionAt(0), document.positionAt(html.length));
+      const success = await editor.edit((editBuilder) => {
+        editBuilder.replace(range, result);
+      });
+
+      if (success) {
+        vscode.window.showInformationMessage('Footnotes generated successfully.');
+      }
+    },
+  );
+
   const diagnostics = vscode.languages.createDiagnosticCollection('html-cleaner-nu');
 
   const validate = vscode.commands.registerCommand('html-cleaner.validateHtml', async () => {
@@ -247,7 +300,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  context.subscriptions.push(disposable, tocDisposable, validate, diagnostics);
+  context.subscriptions.push(disposable, tocDisposable, footnotesDisposable, validate, diagnostics);
 }
 
 export function deactivate() {}
