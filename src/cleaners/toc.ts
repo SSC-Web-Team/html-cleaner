@@ -92,24 +92,7 @@ export function addTableOfContents(
   nav.append(title, list);
   section.append(nav);
 
-  const h1 = body.querySelector('h1, gcds-heading[tag="h1"]');
-
-  if (h1) {
-    // Keep any introductory content between the h1 and the first h2 above the TOC
-    const firstH2 = headings.find(
-      (heading) =>
-        heading.tagName === 'H2' &&
-        Boolean(h1.compareDocumentPosition(heading) & document.defaultView!.Node.DOCUMENT_POSITION_FOLLOWING),
-    );
-
-    if (firstH2) {
-      firstH2.before(section);
-    } else {
-      h1.after(section);
-    }
-  } else {
-    body.prepend(section);
-  }
+  body.prepend(section);
 }
 
 function createItem(

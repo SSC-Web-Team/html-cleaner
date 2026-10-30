@@ -146,19 +146,17 @@ function addBlockSpacing(html: string): string {
       }
     }
 
-    const isFirstParagraphInCell =
-      firstTagName === 'p' && cell !== undefined && !cell.hasParagraph;
+    const isFirstParagraphInCell = firstTagName === 'p' && cell !== undefined && !cell.hasParagraph;
 
     if (
       isFirstParagraphInCell ||
-      (firstTagName && tagsWithSpacing.has(firstTagName) && !openTags.some((tag) => tag.name === 'ul'))
+      (firstTagName &&
+        tagsWithSpacing.has(firstTagName) &&
+        !openTags.some((tag) => tag.name === 'ul'))
     ) {
       if (isFirstParagraphInCell && cell) {
         cell.hasParagraph = true;
-      } else if (
-        formattedLines.length > 0 &&
-        formattedLines[formattedLines.length - 1] !== ''
-      ) {
+      } else if (formattedLines.length > 0 && formattedLines[formattedLines.length - 1] !== '') {
         formattedLines.push('');
       }
     }

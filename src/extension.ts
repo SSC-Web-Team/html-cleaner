@@ -48,7 +48,9 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
       if (!applied) {
-        vscode.window.showErrorMessage('Unable to apply HTML cleanup before reviewing emphasis tags.');
+        vscode.window.showErrorMessage(
+          'Unable to apply HTML cleanup before reviewing emphasis tags.',
+        );
         return;
       }
     }
