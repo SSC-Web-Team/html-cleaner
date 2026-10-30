@@ -10,6 +10,7 @@ import { cleanFrenchTypography } from './cleaners/french-typography.ts';
 import { removeHomepageUtmCodes } from './cleaners/utm-codes.ts';
 import { rewriteCanadaLinks } from './cleaners/canada-links.ts';
 import { addTableOfContents } from './cleaners/toc.ts';
+import { applyEmphasisActions, type EmphasisAction } from './cleaners/emphasis.ts';
 
 export type ContentLanguage = 'en' | 'fr';
 export type ContentPlatform = 'myssc' | 'canada';
@@ -18,6 +19,7 @@ export function cleanHtml(
   html: string,
   language: ContentLanguage = 'en',
   platform: ContentPlatform = 'myssc',
+  emphasisActions: EmphasisAction[] = [],
 ): string {
   // Simple text-based cleanup
   html = html.trim();
@@ -40,6 +42,8 @@ export function cleanHtml(
   if (language === 'fr') {
     cleanFrenchTypography(document);
   }
+
+  applyEmphasisActions(document, emphasisActions);
 
   const result = document.body?.innerHTML ?? '';
 
@@ -119,19 +123,17 @@ function addBlockSpacing(html: string): string {
       }
     }
 
-    const isFirstParagraphInCell =
-      firstTagName === 'p' && cell !== undefined && !cell.hasParagraph;
+    const isFirstParagraphInCell = firstTagName === 'p' && cell !== undefined && !cell.hasParagraph;
 
     if (
       isFirstParagraphInCell ||
-      (firstTagName && tagsWithSpacing.has(firstTagName) && !openTags.some((tag) => tag.name === 'ul'))
+      (firstTagName &&
+        tagsWithSpacing.has(firstTagName) &&
+        !openTags.some((tag) => tag.name === 'ul'))
     ) {
       if (isFirstParagraphInCell && cell) {
         cell.hasParagraph = true;
-      } else if (
-        formattedLines.length > 0 &&
-        formattedLines[formattedLines.length - 1] !== ''
-      ) {
+      } else if (formattedLines.length > 0 && formattedLines[formattedLines.length - 1] !== '') {
         formattedLines.push('');
       }
     }
