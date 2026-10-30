@@ -55,6 +55,10 @@
       {
         "command": "html-cleaner.generateFootnotes",
         "title": "HTML Cleaner: Generate Footnotes"
+      },
+      {
+        "command": "html-cleaner.validateHtml",
+        "title": "HTML Cleaner: Validate HTML (Nu HTML Checker)"
       }
     ]
   },
