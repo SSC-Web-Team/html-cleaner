@@ -21,14 +21,18 @@
     "test:vscode": "vscode-test"
   },
   "dependencies": {
+    "dictionary-en": "^4.0.0",
+    "dictionary-fr": "^3.0.0",
     "js-beautify": "^1.15.4",
-    "jsdom": "^30.0.1"
+    "jsdom": "^30.0.1",
+    "nspell": "^2.1.5"
   },
   "devDependencies": {
     "@types/js-beautify": "^1.14.3",
     "@types/jsdom": "^28.0.3",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
+    "@types/nspell": "^2.1.6",
     "@types/vscode": "^1.125.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
@@ -47,6 +51,10 @@
       {
         "command": "html-cleaner.cleanHtml",
         "title": "HTML Cleaner: Clean HTML"
+      },
+      {
+        "command": "html-cleaner.reviewForeignLanguageWords",
+        "title": "HTML Cleaner: Review EN-FR words"
       },
       {
         "command": "html-cleaner.generateToc",
