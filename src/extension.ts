@@ -1,5 +1,11 @@
 import * as vscode from 'vscode';
-import { cleanHtml, generateFootnotes, generateToc } from './index.ts';
+import {
+  addForeignLanguageSpans,
+  cleanHtml,
+  generateFootnotes,
+  generateToc,
+  getForeignLanguageWords,
+} from './index.ts';
 import { validateHtml } from './validator/nu-validator.ts';
 import { getEmphasisOccurrences, type EmphasisAction } from './cleaners/emphasis.ts';
 
@@ -136,6 +142,95 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  const reviewForeignLanguageWords = vscode.commands.registerCommand(
+    'html-cleaner.reviewForeignLanguageWords',
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+
+      if (!editor) {
+        return;
+      }
+
+      const language = await vscode.window.showQuickPick(
+        [
+          { label: 'English', value: 'en' as const },
+          { label: 'French', value: 'fr' as const },
+        ],
+        { placeHolder: 'Select the primary language of this HTML' },
+      );
+
+      if (!language) {
+        return;
+      }
+
+      const { document } = editor;
+      const html = document.getText();
+      const documentVersion = document.version;
+      const occurrences = getForeignLanguageWords(html, language.value);
+
+      if (occurrences.length === 0) {
+        vscode.window.showInformationMessage('No likely foreign-language text found.');
+        return;
+      }
+
+      const selectedOccurrences: number[] = [];
+
+      for (const [index, occurrence] of occurrences.entries()) {
+        if (document.version !== documentVersion || document.getText() !== html) {
+          vscode.window.showWarningMessage(
+            'The document changed during language review. No changes were applied.',
+          );
+          return;
+        }
+
+        const action = await vscode.window.showQuickPick(
+          [
+            { label: `Wrap with <span lang="${occurrence.languageTag}">`, value: 'wrap' as const },
+            { label: 'Skip', value: 'skip' as const },
+          ],
+          {
+            title: `Candidate ${index + 1} of ${occurrences.length}: ${occurrence.word}`,
+            placeHolder: occurrence.context,
+          },
+        );
+
+        if (!action) {
+          break;
+        }
+
+        if (action.value === 'wrap') {
+          selectedOccurrences.push(index);
+        }
+      }
+
+      if (document.version !== documentVersion || document.getText() !== html) {
+        vscode.window.showWarningMessage(
+          'The document changed during language review. No changes were applied.',
+        );
+        return;
+      }
+
+      if (selectedOccurrences.length === 0) {
+        vscode.window.showInformationMessage('No words were wrapped.');
+        return;
+      }
+
+      const result = addForeignLanguageSpans(html, language.value, selectedOccurrences);
+      const range = new vscode.Range(document.positionAt(0), document.positionAt(html.length));
+      const success = await editor.edit((editBuilder) => {
+        editBuilder.replace(range, result);
+      });
+
+      if (success) {
+        vscode.window.showInformationMessage(
+          `Wrapped ${selectedOccurrences.length} foreign-language segment(s).`,
+        );
+      } else {
+        vscode.window.showErrorMessage('Unable to apply the language spans.');
+      }
+    },
+  );
+
   const tocDisposable = vscode.commands.registerCommand('html-cleaner.generateToc', async () => {
     const editor = vscode.window.activeTextEditor;
 
@@ -219,7 +314,9 @@ export function activate(context: vscode.ExtensionContext) {
       const result = generateFootnotes(html, language.value, platform.value);
 
       if (result === null) {
-        vscode.window.showWarningMessage('No footnotes found. Each footnote needs a reference in the text that links to it.');
+        vscode.window.showWarningMessage(
+          'No footnotes found. Each footnote needs a reference in the text that links to it.',
+        );
         return;
       }
 
@@ -300,7 +397,14 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  context.subscriptions.push(disposable, tocDisposable, footnotesDisposable, validate, diagnostics);
+  context.subscriptions.push(
+    disposable,
+    reviewForeignLanguageWords,
+    tocDisposable,
+    footnotesDisposable,
+    validate,
+    diagnostics,
+  );
 }
 
 export function deactivate() {}

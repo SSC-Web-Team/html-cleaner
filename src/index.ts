@@ -12,9 +12,36 @@ import { rewriteCanadaLinks } from './cleaners/canada-links.ts';
 import { addTableOfContents } from './cleaners/toc.ts';
 import { addFootnotes } from './cleaners/footnotes.ts';
 import { applyEmphasisActions, type EmphasisAction } from './cleaners/emphasis.ts';
+import {
+  findForeignLanguageOccurrences,
+  type ForeignLanguageOccurrence,
+  wrapForeignLanguageOccurrences,
+} from './cleaners/foreign-language.ts';
+import type { ContentLanguage } from './cleaners/foreign-language.ts';
 
-export type ContentLanguage = 'en' | 'fr';
+export type { ContentLanguage };
 export type ContentPlatform = 'myssc' | 'canada';
+
+export function getForeignLanguageWords(
+  html: string,
+  language: ContentLanguage,
+): ForeignLanguageOccurrence[] {
+  const { document } = new JSDOM(html).window;
+
+  return findForeignLanguageOccurrences(document, language);
+}
+
+export function addForeignLanguageSpans(
+  html: string,
+  language: ContentLanguage,
+  selectedOccurrences: number[],
+): string {
+  const { document } = new JSDOM(html).window;
+
+  wrapForeignLanguageOccurrences(document, language, selectedOccurrences);
+
+  return formatDocument(document);
+}
 
 export function cleanHtml(
   html: string,
