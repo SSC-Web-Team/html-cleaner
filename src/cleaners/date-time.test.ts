@@ -49,19 +49,19 @@ test('format French time', () => {
 
 test('wrap English time with periods', () => {
   expect(run('<p>3:30 p.m.</p>')).toBe(
-    '<p><time class="nowrap" datetime="15:30">3:30 p.m.</time></p>',
+    '<p><time class="nowrap" datetime="15:30">3:30 pm</time></p>',
   );
 });
 
 test('wrap English time with periods and uppercase', () => {
   expect(run('<p>3:30 P.M.</p>')).toBe(
-    '<p><time class="nowrap" datetime="15:30">3:30 P.M.</time></p>',
+    '<p><time class="nowrap" datetime="15:30">3:30 pm</time></p>',
   );
 });
 
 test('wrap English time without periods and uppercase', () => {
   expect(run('<p>3:30 PM</p>')).toBe(
-    '<p><time class="nowrap" datetime="15:30">3:30 PM</time></p>',
+    '<p><time class="nowrap" datetime="15:30">3:30 pm</time></p>',
   );
 });
 
@@ -73,12 +73,42 @@ test('wrap English time lowercase', () => {
 
 test('wrap English time uppercase', () => {
   expect(run('<p>3:30 PM</p>')).toBe(
-    '<p><time class="nowrap" datetime="15:30">3:30 PM</time></p>',
+    '<p><time class="nowrap" datetime="15:30">3:30 pm</time></p>',
   );
 });
 
 test('wrap English date and time', () => {
   expect(run('<p>October 26 from 1 to 2 pm (ET)</p>')).toBe(
     '<p><time class="nowrap" datetime="10-26">October&nbsp;26</time> from <time class="nowrap" datetime="13:00">1 pm</time> to <time class="nowrap" datetime="14:00">2 pm</time> (ET)</p>',
+  );
+});
+
+test('wrap English time with am (lowercase)', () => {
+  expect(run('<p>9:00 am</p>')).toBe(
+    '<p><time class="nowrap" datetime="09:00">9:00 am</time></p>',
+  );
+});
+
+test('wrap English time with A.M. (uppercase with periods)', () => {
+  expect(run('<p>9:00 A.M.</p>')).toBe(
+    '<p><time class="nowrap" datetime="09:00">9:00 am</time></p>',
+  );
+});
+
+test('wrap English time with a.m. (lowercase with periods)', () => {
+  expect(run('<p>9:00 a.m.</p>')).toBe(
+    '<p><time class="nowrap" datetime="09:00">9:00 am</time></p>',
+  );
+});
+
+test('wrap English time without minutes with p.m.', () => {
+  expect(run('<p>2 p.m.</p>')).toBe(
+    '<p><time class="nowrap" datetime="14:00">2 pm</time></p>',
+  );
+});
+
+test('wrap English time without minutes with P.M. (uppercase with periods)', () => {
+  expect(run('<p>2 P.M.</p>')).toBe(
+    '<p><time class="nowrap" datetime="14:00">2 pm</time></p>',
   );
 });

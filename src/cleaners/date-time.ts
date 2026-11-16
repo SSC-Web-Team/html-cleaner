@@ -54,6 +54,11 @@ const to24Hours = (hour: string, period = '') => {
   return hours;
 };
 
+const normalizePeriod = (period: string) => {
+  if (!period) return period;
+  return /^p/i.test(period) ? 'pm' : 'am';
+};
+
 type Rule = {
   regex: RegExp;
   format: (match: RegExpMatchArray) => { dateTime: string; text: string };
@@ -92,23 +97,23 @@ const rules: Rule[] = [
     ),
     format: ([, hour, period]) => ({
       dateTime: `${pad(to24Hours(hour, period))}:00`,
-      text: `${hour} ${period}`,
+      text: `${hour} ${normalizePeriod(period)}`,
     }),
   },
   // English time: "3:30 p.m."
   {
     regex: new RegExp(`\\b(\\d{1,2}):(\\d{2})(?:\\s?(${PERIOD}))?(?!\\w)`, 'gi'),
-    format: ([text, hour, minutes, period]) => ({
+    format: ([_text, hour, minutes, period]) => ({
       dateTime: `${pad(to24Hours(hour, period))}:${minutes}`,
-      text,
+      text: period ? `${hour}:${minutes} ${normalizePeriod(period)}` : _text,
     }),
   },
   // English time without minutes: "2 pm"
   {
     regex: new RegExp(`(?<![\\d:])\\b(${HOUR_12})\\s?(${PERIOD})(?!\\w)`, 'gi'),
-    format: ([text, hour, period]) => ({
+    format: ([_text, hour, period]) => ({
       dateTime: `${pad(to24Hours(hour, period))}:00`,
-      text,
+      text: `${hour} ${normalizePeriod(period)}`,
     }),
   },
   // French time: "15 h 30" / "15h30" / "15 h"
