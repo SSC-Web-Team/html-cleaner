@@ -6,4 +6,5 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- Add **HTML Cleaner: Paste Rich Text as HTML** to paste copied Word content as HTML.
 - Initial release

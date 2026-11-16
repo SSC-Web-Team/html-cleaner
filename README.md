@@ -12,6 +12,21 @@ For example if there is an image subfolder under your extension project workspac
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
+### Paste from Word as HTML
+
+1. Select and copy the content in Word
+2. In VS Code, open an HTML file or set the editor's language mode to **HTML** (using the language indicator in the bottom-right corner). An unsaved HTML editor works too
+3. Place the cursor where you want the HTML, or select the text to replace
+4. Open the Command Palette with **Ctrl+Shift+P** (Windows/Linux) or **Cmd+Shift+P** (macOS), and run **HTML Cleaner: Paste Rich Text as HTML**. No Word file needs to be saved
+
+The extension uses the HTML supplied by the clipboard. It also works with rich HTML copied from other applications.
+
+The command needs HTML on the clipboard and the VS Code setting `editor.pasteAs.enabled` enabled (it is already enabled by default); if no HTML is available, nothing is inserted. Plain-text clipboard content can be pasted normally.
+
+The pasted HTML can contain Word-specific styles and markup. Review the result, especially lists, images, tables and complex layouts: some Word formatting depends on styles or local image files that are not included in the pasted fragment. The extension cannot recover formatting if the source application or clipboard does not provide HTML. To clean the markup afterward, run **HTML Cleaner: Clean HTML** from the Command Palette and choose the language and platform. Review its output, since cleanup can change formatting.
+
+Normal paste and your existing VS Code paste settings are unchanged.
+
 ## Requirements
 
 If you have any requirements or dependencies, add a section describing those and how to install and configure them.
