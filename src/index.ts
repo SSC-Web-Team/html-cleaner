@@ -110,8 +110,9 @@ export function generateFootnotes(
   }
 
   // The serializer leaves < and > raw in attributes; the MySSC+ component expects them escaped
-  return formatDocument(document).replace(/data-text="([^"]*)"/g, (_, value: string) =>
-    `data-text="${value.replace(/</g, '&lt;').replace(/>/g, '&gt;')}"`,
+  return formatDocument(document).replace(
+    /data-text="([^"]*)"/g,
+    (_, value: string) => `data-text="${value.replace(/</g, '&lt;').replace(/>/g, '&gt;')}"`,
   );
 }
 

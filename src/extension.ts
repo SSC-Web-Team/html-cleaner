@@ -8,8 +8,45 @@ import {
 } from './index.ts';
 import { validateHtml } from './validator/nu-validator.ts';
 import { getEmphasisOccurrences, type EmphasisAction } from './cleaners/emphasis.ts';
+import { pasteHtmlKind, pasteHtmlProvider } from './paste/paste-provider.ts';
 
 export function activate(context: vscode.ExtensionContext) {
+  const pasteDisposable = vscode.languages.registerDocumentPasteEditProvider(
+    { language: 'html' },
+    pasteHtmlProvider,
+    { pasteMimeTypes: ['text/html'], providedPasteEditKinds: [pasteHtmlKind] },
+  );
+
+  const pasteCommand = vscode.commands.registerCommand(
+    'html-cleaner.pasteRichTextAsHtml',
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || editor.document.languageId !== 'html') {
+        void vscode.window.showWarningMessage('Open an HTML editor to paste rich text as HTML.');
+        return;
+      }
+
+      if (
+        !vscode.workspace.getConfiguration('editor', editor.document.uri).get('pasteAs.enabled')
+      ) {
+        void vscode.window.showWarningMessage(
+          'Enable the editor.pasteAs.enabled setting to paste rich text as HTML.',
+        );
+        return;
+      }
+
+      try {
+        await vscode.commands.executeCommand('editor.action.pasteAs', {
+          kind: pasteHtmlKind.value,
+        });
+      } catch (error) {
+        void vscode.window.showErrorMessage(
+          `Could not paste clipboard HTML: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+    },
+  );
+
   const disposable = vscode.commands.registerCommand('html-cleaner.cleanHtml', async () => {
     const editor = vscode.window.activeTextEditor;
 
@@ -398,6 +435,8 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(
+    pasteDisposable,
+    pasteCommand,
     disposable,
     reviewForeignLanguageWords,
     tocDisposable,

@@ -49,6 +49,10 @@
   "contributes": {
     "commands": [
       {
+        "command": "html-cleaner.pasteRichTextAsHtml",
+        "title": "HTML Cleaner: Paste Rich Text as HTML"
+      },
+      {
         "command": "html-cleaner.cleanHtml",
         "title": "HTML Cleaner: Clean HTML"
       },
