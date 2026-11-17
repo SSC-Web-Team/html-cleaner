@@ -5,9 +5,8 @@ import { cleanFrenchTypography } from './french-typography.ts';
 import { cleanHtml } from '../index.ts';
 
 test('add a nonbreaking space before colons and dollar signs', () => {
-  const { document } = new JSDOM(
-    '<p>Bonjour : 25 $, et 10$</p><code>http://example.com</code>',
-  ).window;
+  const { document } = new JSDOM('<p>Bonjour : 25 $, et 10$</p><code>http://example.com</code>')
+    .window;
 
   cleanFrenchTypography(document);
 
@@ -17,15 +16,11 @@ test('add a nonbreaking space before colons and dollar signs', () => {
 });
 
 test('add nonbreaking spaces between French thousands groups', () => {
-  const { document } = new JSDOM(
-    '<p>1 239; 13 333 333; 1234 567; 1 23</p>',
-  ).window;
+  const { document } = new JSDOM('<p>1 239; 13 333 333; 1234 567; 1 23</p>').window;
 
   cleanFrenchTypography(document);
 
-  expect(document.body.innerHTML).toBe(
-    '<p>1&nbsp;239; 13&nbsp;333&nbsp;333; 1234 567; 1 23</p>',
-  );
+  expect(document.body.innerHTML).toBe('<p>1&nbsp;239; 13&nbsp;333&nbsp;333; 1234 567; 1 23</p>');
 });
 
 test('apply French typography only when French is selected', () => {

@@ -19,8 +19,7 @@ function formatTables(document: Document): void {
     const hasContent = rows.some((row) =>
       Array.from(row.cells).some(
         (cell) =>
-          cell.textContent?.trim() ||
-          cell.querySelector('img, svg, video, audio, object, iframe'),
+          cell.textContent?.trim() || cell.querySelector('img, svg, video, audio, object, iframe'),
       ),
     );
 
@@ -100,11 +99,14 @@ function isHeaderRow(row: HTMLTableRowElement): boolean {
 function isBoldDataHeaderRow(row: HTMLTableRowElement): boolean {
   const cells = Array.from(row.cells);
 
-  return cells.length > 0 && cells.every(
-    (cell) =>
-      cell.tagName === 'TD' &&
-      cell.children.length === 1 &&
-      (cell.firstElementChild?.tagName === 'STRONG' || cell.firstElementChild?.tagName === 'B'),
+  return (
+    cells.length > 0 &&
+    cells.every(
+      (cell) =>
+        cell.tagName === 'TD' &&
+        cell.children.length === 1 &&
+        (cell.firstElementChild?.tagName === 'STRONG' || cell.firstElementChild?.tagName === 'B'),
+    )
   );
 }
 

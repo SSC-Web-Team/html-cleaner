@@ -58,7 +58,10 @@ export function cleanElements(document: Document): void {
   // Unwrap Word bookmark anchors that do not link to another location
   unwrapBySelector(document, 'a:not([href])');
 
-  unwrapBySelector(document, 'th strong, h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong, th b, h1 b, h2 b, h3 b, h4 b, h5 b, h6 b');
+  unwrapBySelector(
+    document,
+    'th strong, h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong, th b, h1 b, h2 b, h3 b, h4 b, h5 b, h6 b',
+  );
   unwrapDuplicateStrongTags(document);
   mergeAdjacentBoldTags(document);
 

@@ -118,7 +118,9 @@ test('converts list-style footnotes to WET', () => {
 });
 
 test('ignores list footnotes that have no reference in the text', () => {
-  expect(generateFootnotes(list.replace(/<sup.*?<\/sup>|<a id.*?<\/a>/g, ''), 'en', 'myssc')).toBeNull();
+  expect(
+    generateFootnotes(list.replace(/<sup.*?<\/sup>|<a id.*?<\/a>/g, ''), 'en', 'myssc'),
+  ).toBeNull();
 });
 
 test('Clean HTML keeps the WET footnote classes and hidden spans', () => {

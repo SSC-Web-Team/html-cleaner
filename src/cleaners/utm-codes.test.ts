@@ -40,7 +40,9 @@ test('preserve other query parameters when removing matching UTM codes', () => {
     run(
       'https://plus.ssc-spc.gc.ca/en/topic/internal-disclosure-wrongdoing?lang=en&utm_source=myssc&utm_medium=homepage&utm_campaign=latest_news&ref=email#section',
     ),
-  ).toBe('https://plus.ssc-spc.gc.ca/en/topic/internal-disclosure-wrongdoing?lang=en&ref=email#section');
+  ).toBe(
+    'https://plus.ssc-spc.gc.ca/en/topic/internal-disclosure-wrongdoing?lang=en&ref=email#section',
+  );
 });
 
 test('preserve unrelated UTM combinations', () => {

@@ -69,9 +69,9 @@ test('wraps the TOC in a labelled nav', () => {
   expect(run(source, 'en').querySelector('#toc-nav > nav')?.getAttribute('aria-label')).toBe(
     'On this page',
   );
-  expect(run(source, 'fr', 'canada').querySelector('#toc-nav > nav')?.getAttribute('aria-label')).toBe(
-    'Sur cette page',
-  );
+  expect(
+    run(source, 'fr', 'canada').querySelector('#toc-nav > nav')?.getAttribute('aria-label'),
+  ).toBe('Sur cette page');
 });
 
 test('always places the TOC first, even above the h1', () => {
