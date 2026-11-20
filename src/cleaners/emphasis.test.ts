@@ -17,9 +17,7 @@ test('ignore em-like text in comments, attributes, and script content', () => {
   const html =
     '<!-- <em>comment</em> --><p title="<em>attribute</em>"><em>Text</em></p><script>"<em>script</em>"</script>';
 
-  expect(getEmphasisOccurrences(html)).toEqual([
-    { start: 55, end: 68, text: 'Text' },
-  ]);
+  expect(getEmphasisOccurrences(html)).toEqual([{ start: 55, end: 68, text: 'Text' }]);
 });
 
 test.each(['i', 'cite', 'strong'] as const)('change em to <%s>', (tag) => {
@@ -40,23 +38,23 @@ test('unwrap em while preserving its contents', () => {
 
 test('apply per-element emphasis actions through the HTML cleaner', () => {
   expect(
-    cleanHtml('<p><em>Italic</em>, <em>Citation</em>, <em>Important</em>, <em>Plain</em></p>', 'en', 'myssc', [
-      'i',
-      'cite',
-      'strong',
-      'unwrap',
-    ]),
+    cleanHtml(
+      '<p><em>Italic</em>, <em>Citation</em>, <em>Important</em>, <em>Plain</em></p>',
+      'en',
+      'myssc',
+      ['i', 'cite', 'strong', 'unwrap'],
+    ),
   ).toBe('<p><i>Italic</i>, <cite>Citation</cite>, <strong>Important</strong>, Plain</p>');
 });
 
 test('apply emphasis choices after other cleanup transformations', () => {
-  expect(
-    cleanHtml('<p><em>Keep <del>removed</del> text</em></p>', 'en', 'myssc', ['cite']),
-  ).toBe('<p><cite>Keep text</cite></p>');
+  expect(cleanHtml('<p><em>Keep <del>removed</del> text</em></p>', 'en', 'myssc', ['cite'])).toBe(
+    '<p><cite>Keep text</cite></p>',
+  );
 });
 
 test('move trailing space outside a newly selected cite tag', () => {
-  expect(
-    cleanHtml('<p>metus. <em>Aliquam </em>augue</p>', 'en', 'myssc', ['cite']),
-  ).toBe('<p>metus. <cite>Aliquam</cite> augue</p>');
+  expect(cleanHtml('<p>metus. <em>Aliquam </em>augue</p>', 'en', 'myssc', ['cite'])).toBe(
+    '<p>metus. <cite>Aliquam</cite> augue</p>',
+  );
 });

@@ -47,7 +47,9 @@ test('move whitespace at both link boundaries outside the link', () => {
 });
 
 test('normalize duplicate and nonbreaking spaces around links', () => {
-  const dom = new JSDOM('<p>  This&nbsp;&nbsp; is  a&nbsp;<a href=""> link&nbsp;</a>&nbsp;about  stuff .  </p>');
+  const dom = new JSDOM(
+    '<p>  This&nbsp;&nbsp; is  a&nbsp;<a href=""> link&nbsp;</a>&nbsp;about  stuff .  </p>',
+  );
   const { document } = dom.window;
 
   normalizeText(document);

@@ -13,9 +13,9 @@ function run(href: string): string {
 }
 
 test('rewrite Canada.ca paths while preserving query strings and fragments', () => {
-  expect(
-    run('https://www.canada.ca/en/services.html?lang=en#section'),
-  ).toBe('/content/canadasite/en/services.html?lang=en#section');
+  expect(run('https://www.canada.ca/en/services.html?lang=en#section')).toBe(
+    '/content/canadasite/en/services.html?lang=en#section',
+  );
 });
 
 test('rewrite Canada.ca home page paths', () => {
@@ -37,10 +37,6 @@ test.each([
 test('rewrite Canada.ca links only for the Canada.ca platform', () => {
   const html = '<a href="https://www.canada.ca/home.html">Home</a>';
 
-  expect(cleanHtml(html, 'en', 'canada')).toBe(
-    '<a href="/content/canadasite/home.html">Home</a>',
-  );
-  expect(cleanHtml(html, 'en', 'myssc')).toBe(
-    '<a href="https://www.canada.ca/home.html">Home</a>',
-  );
+  expect(cleanHtml(html, 'en', 'canada')).toBe('<a href="/content/canadasite/home.html">Home</a>');
+  expect(cleanHtml(html, 'en', 'myssc')).toBe('<a href="https://www.canada.ca/home.html">Home</a>');
 });

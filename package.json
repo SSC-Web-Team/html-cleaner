@@ -1,11 +1,27 @@
 {
   "name": "html-cleaner",
-  "displayName": "html-cleaner",
-  "version": "0.0.1",
-  "description": "Clean up HTML code",
+  "displayName": "HTML Cleaner",
+  "version": "1.0.0",
+  "description": "Professional HTML cleaning and formatting for Word-pasted content. Paste rich text, clean markup, validate HTML, and generate TOC and footnotes.",
   "categories": [
-    "Other"
+    "Formatting",
+    "Linters"
   ],
+  "keywords": [
+    "cleaner",
+    "footnotes",
+    "formatting",
+    "html",
+    "paste",
+    "toc",
+    "validation",
+    "word"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SSC-Web-Team/html-cleaner"
+  },
+  "publisher": "SSC-Web-Team",
   "type": "module",
   "main": "./out/extension.js",
   "scripts": {

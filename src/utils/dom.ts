@@ -69,11 +69,9 @@ export function normalizeText(document: Document) {
     trimBoundaryText(lineBreak.nextSibling, true);
   });
 
-  document
-    .querySelectorAll('p, li, td, th, h1, h2, h3, h4, h5, h6')
-    .forEach((element) => {
-      trimElementBoundarySpaces(element);
-    });
+  document.querySelectorAll('p, li, td, th, h1, h2, h3, h4, h5, h6').forEach((element) => {
+    trimElementBoundarySpaces(element);
+  });
 
   trimElementBoundarySpaces(document.body);
 }
@@ -136,8 +134,8 @@ function ensureBoundarySpace(document: Document, element: Element, before: boole
 function hasBoundarySpace(node: Node, before: boolean): boolean {
   if (node.nodeType === 3) {
     return before
-      ? node.textContent?.endsWith(' ') ?? false
-      : node.textContent?.startsWith(' ') ?? false;
+      ? (node.textContent?.endsWith(' ') ?? false)
+      : (node.textContent?.startsWith(' ') ?? false);
   }
 
   if (node.nodeName === 'BR') {
@@ -151,11 +149,7 @@ function hasBoundarySpace(node: Node, before: boolean): boolean {
   const textNodes = getTextNodes(node as Element);
   const textNode = before ? textNodes[textNodes.length - 1] : textNodes[0];
 
-  return textNode
-    ? before
-      ? textNode.data.endsWith(' ')
-      : textNode.data.startsWith(' ')
-    : false;
+  return textNode ? (before ? textNode.data.endsWith(' ') : textNode.data.startsWith(' ')) : false;
 }
 
 function trimBoundaryText(node: Node | null, leading: boolean): void {

@@ -157,9 +157,9 @@ function collectWetFootnotes(document: Document): Footnote[] {
     const content = Array.from(
       definition.querySelectorAll<HTMLParagraphElement>('p:not(.fn-rtn)'),
     ).flatMap((paragraph) => toParagraph(document, paragraph.innerHTML));
-    const refs = Array.from(
-      document.querySelectorAll<HTMLElement>('sup[id$="-rf"]'),
-    ).filter((sup) => sup.querySelector('a')?.getAttribute('href') === `#fn${id}`);
+    const refs = Array.from(document.querySelectorAll<HTMLElement>('sup[id$="-rf"]')).filter(
+      (sup) => sup.querySelector('a')?.getAttribute('href') === `#fn${id}`,
+    );
 
     if (content.length === 0 || refs.length === 0) {
       return;
@@ -233,7 +233,11 @@ function cleanUpSources(document: Document, notes: Footnote[]): void {
   parents.forEach((parent) => {
     parent.querySelectorAll(':scope > hr').forEach((rule) => rule.remove());
 
-    if (['DIV', 'UL', 'OL'].includes(parent.tagName) && !parent.textContent?.trim() && parent.children.length === 0) {
+    if (
+      ['DIV', 'UL', 'OL'].includes(parent.tagName) &&
+      !parent.textContent?.trim() &&
+      parent.children.length === 0
+    ) {
       parent.remove();
     }
   });

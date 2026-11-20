@@ -3,14 +3,17 @@ import { JSDOM } from 'jsdom';
 
 import { cleanFormatting } from './formatting.ts';
 
-test.each(['<br>', '<br />'])('move a trailing break before the closing strong tag: %s', (breakTag) => {
-  const dom = new JSDOM(`<strong>Bold${breakTag}</strong>`);
-  const { document } = dom.window;
+test.each(['<br>', '<br />'])(
+  'move a trailing break before the closing strong tag: %s',
+  (breakTag) => {
+    const dom = new JSDOM(`<strong>Bold${breakTag}</strong>`);
+    const { document } = dom.window;
 
-  cleanFormatting(document);
+    cleanFormatting(document);
 
-  expect(document.body.innerHTML).toBe('<strong>Bold</strong><br>');
-});
+    expect(document.body.innerHTML).toBe('<strong>Bold</strong><br>');
+  },
+);
 
 test('move consecutive trailing breaks outside a bold tag', () => {
   const dom = new JSDOM('<b>Bold<br><br></b>');
@@ -72,7 +75,9 @@ test('put all rows in tbody when there is no header row', () => {
 });
 
 test('remove empty tables', () => {
-  const dom = new JSDOM('<table></table><table><tr><td> </td></tr></table><table><tr><td>Content</td></tr></table>');
+  const dom = new JSDOM(
+    '<table></table><table><tr><td> </td></tr></table><table><tr><td>Content</td></tr></table>',
+  );
   const { document } = dom.window;
 
   cleanFormatting(document);
